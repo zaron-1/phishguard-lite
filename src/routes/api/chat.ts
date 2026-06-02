@@ -12,6 +12,25 @@ Adapt explanations to the learner's level. Use clear structure, short paragraphs
 Use markdown formatting. Keep answers focused. Never provide instructions that enable real-world illegal attacks;
 explain concepts defensively and ethically.`;
 
+function messageText(message: UIMessage | undefined): string {
+  if (!message) return "";
+  return message.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
+}
+
+async function resolveUserId(request: Request): Promise<string | null> {
+  const authHeader = request.headers.get("Authorization");
+  const token = authHeader?.replace(/^Bearer\s+/i, "").trim();
+  if (!token) return null;
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin.auth.getUser(token);
+    if (error || !data.user) return null;
+    return data.user.id;
+  } catch {
+    return null;
+  }
+}
+
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
@@ -24,6 +43,12 @@ export const Route = createFileRoute("/api/chat")({
         const key = process.env.LOVABLE_API_KEY;
         if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
 
+        const userId = await resolveUserId(request);
+        const conversationId = crypto.randomUUID();
+        const lastUserText = messageText(
+          (messages as UIMessage[]).filter((m) => m.role === "user").at(-1),
+        );
+
         try {
           const gateway = createLovableAiGatewayProvider(key);
           const model = gateway("google/gemini-3-flash-preview");
@@ -31,6 +56,30 @@ export const Route = createFileRoute("/api/chat")({
             model,
             system: SYSTEM_PROMPT,
             messages: await convertToModelMessages(messages as UIMessage[]),
+            onFinish: async ({ text }) => {
+              if (!userId) return;
+              try {
+                const { supabaseAdmin } = await import(
+                  "@/integrations/supabase/client.server"
+                );
+                await supabaseAdmin.from("ai_chats").insert([
+                  {
+                    user_id: userId,
+                    conversation_id: conversationId,
+                    role: "user",
+                    content: lastUserText,
+                  },
+                  {
+                    user_id: userId,
+                    conversation_id: conversationId,
+                    role: "assistant",
+                    content: text,
+                  },
+                ]);
+              } catch (e) {
+                console.error("Failed to persist chat:", e);
+              }
+            },
           });
           return result.toUIMessageStreamResponse({
             originalMessages: messages as UIMessage[],
