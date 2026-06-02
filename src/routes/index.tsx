@@ -1,29 +1,71 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ShieldCheck, GraduationCap, LayoutDashboard, ArrowRight } from "lucide-react";
+import logo from "@/assets/logo.png";
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "PhishGuard Lite — AI Phishing Detection & Cyber Learning" },
+      { name: "description", content: "Detect phishing links instantly and learn cybersecurity with an AI tutor. Smart, lightweight, and secure." },
+      { property: "og:title", content: "PhishGuard Lite" },
+      { property: "og:description", content: "AI-powered phishing detection and cybersecurity learning." },
     ],
   }),
-  component: Index,
+  component: Landing,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function Landing() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen bg-background">
+      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+        <div className="flex items-center gap-2">
+          <img src={logo} alt="PhishGuard" width={36} height={36} className="h-9 w-9" />
+          <span className="text-lg font-bold text-cyber-gradient">PhishGuard Lite</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Button asChild>
+            <Link to="/auth">Get started</Link>
+          </Button>
+        </div>
+      </header>
+
+      <section className="mx-auto max-w-4xl px-6 pb-16 pt-16 text-center">
+        <span className="inline-block rounded-full border border-primary/30 bg-accent px-4 py-1 text-xs font-medium text-accent-foreground">
+          AI-powered cybersecurity platform
+        </span>
+        <h1 className="mt-6 text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl">
+          Stop <span className="text-cyber-gradient">phishing</span> before it hooks you.
+        </h1>
+        <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
+          Paste any link to get an instant AI risk verdict, then sharpen your skills with a cybersecurity AI tutor — all in one secure, lightweight app.
+        </p>
+        <div className="mt-8 flex justify-center gap-3">
+          <Button asChild size="lg" className="glow">
+            <Link to="/auth">
+              Analyze a link <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+      </section>
+
+      <section className="mx-auto grid max-w-5xl gap-6 px-6 pb-24 md:grid-cols-3">
+        {[
+          { icon: ShieldCheck, title: "Phishing Analyzer", desc: "AI checks SSL, domain reputation, typosquatting, impersonation and more — with a 0–100 risk score." },
+          { icon: GraduationCap, title: "AI Tutor", desc: "Ask anything from beginner to expert: attacks, tools, networking, ethical hacking and certifications." },
+          { icon: LayoutDashboard, title: "Smart Dashboard", desc: "Track your analyses, learning activity and progress in clean, modern charts." },
+        ].map(({ icon: Icon, title, desc }) => (
+          <div key={title} className="rounded-2xl border bg-card p-6 transition-shadow hover:shadow-lg">
+            <div className="mb-4 inline-flex rounded-xl bg-accent p-3 text-primary">
+              <Icon className="h-6 w-6" />
+            </div>
+            <h3 className="text-lg font-semibold">{title}</h3>
+            <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
+          </div>
+        ))}
+      </section>
     </div>
   );
 }
