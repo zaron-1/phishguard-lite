@@ -59,7 +59,7 @@ function Landing() {
       </section>
 
 
-      <section className="mx-auto grid max-w-5xl gap-6 px-6 pb-24 md:grid-cols-3">
+      <section className="relative mx-auto grid max-w-5xl gap-6 px-4 pb-24 sm:px-6 md:grid-cols-3">
         {[
           { icon: ShieldCheck, title: "Phishing Analyzer", desc: "AI checks SSL, domain reputation, typosquatting, impersonation and more — with a 0–100 risk score." },
           { icon: GraduationCap, title: "AI Tutor", desc: "Ask anything from beginner to expert: attacks, tools, networking, ethical hacking and certifications." },
