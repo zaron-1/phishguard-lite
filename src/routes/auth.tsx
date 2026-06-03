@@ -33,8 +33,12 @@ function AuthPage() {
   }, [navigate]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-background">
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="animate-blob absolute -left-24 -top-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl sm:h-96 sm:w-96" />
+        <div className="animate-blob-slow absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-chart-5/20 blur-3xl sm:h-96 sm:w-96" />
+      </div>
+      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
         <Link to="/" className="flex items-center gap-2">
           <ShieldCheck className="h-7 w-7 text-primary" />
           <span className="text-lg font-bold text-cyber-gradient">PhishGuard Lite</span>
@@ -42,8 +46,9 @@ function AuthPage() {
         <ThemeToggle />
       </header>
 
-      <main className="flex flex-1 items-center justify-center px-6 pb-16">
-        <div className="w-full max-w-sm rounded-2xl border bg-card p-8 shadow-sm">
+      <main className="flex flex-1 items-center justify-center px-4 pb-16 sm:px-6">
+
+        <div className="w-full max-w-sm rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
           <Tabs value={mode} onValueChange={(v) => setMode(v as "login" | "signup")}>
             <TabsList className="mb-6 grid w-full grid-cols-2">
               <TabsTrigger value="login">Log in</TabsTrigger>
