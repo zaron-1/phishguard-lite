@@ -132,28 +132,19 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
 }
 
 function SignupFlow({ onSuccess }: { onSuccess: () => void }) {
-  const [step, setStep] = useState<"details" | "otp">("details");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
-  const [resendIn, setResendIn] = useState(0);
 
-  useEffect(() => {
-    if (resendIn <= 0) return;
-    const t = setInterval(() => setResendIn((s) => s - 1), 1000);
-    return () => clearInterval(t);
-  }, [resendIn]);
-
-  const register = async (e?: React.FormEvent) => {
-    e?.preventDefault();
+  const register = async (e: React.FormEvent) => {
+    e.preventDefault();
     const trimmedEmail = email.trim().toLowerCase();
     const trimmedName = name.trim();
     const trimmedPhone = phone.trim();
     if (trimmedName.length < 2) {
-      toast.error("Please enter your name.");
+      toast.error("Please enter your full name.");
       return;
     }
     if (!emailRegex.test(trimmedEmail)) {
@@ -169,15 +160,15 @@ function SignupFlow({ onSuccess }: { onSuccess: () => void }) {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: trimmedEmail,
       password,
       options: {
         data: { display_name: trimmedName, phone: trimmedPhone },
       },
     });
-    setLoading(false);
     if (error) {
+      setLoading(false);
       toast.error(
         error.message.includes("already registered")
           ? "An account with this email already exists. Try logging in."
@@ -185,103 +176,31 @@ function SignupFlow({ onSuccess }: { onSuccess: () => void }) {
       );
       return;
     }
-    setEmail(trimmedEmail);
-    setStep("otp");
-    setResendIn(45);
-    toast.success("We sent a 6-digit verification code to your email.");
-  };
 
-  const resend = async () => {
-    setLoading(true);
-    const { error } = await supabase.auth.resend({ type: "signup", email });
-    setLoading(false);
-    if (error) {
-      toast.error(error.message);
-      return;
+    // With auto-confirm enabled, signUp returns a session and logs the user in.
+    if (!data.session) {
+      // Fallback: sign in immediately in case a session wasn't returned.
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: trimmedEmail,
+        password,
+      });
+      if (signInError) {
+        setLoading(false);
+        toast.error("Account created. Please log in to continue.");
+        return;
+      }
     }
-    setResendIn(45);
-    toast.success("A new code is on its way.");
-  };
-
-  const verify = async (value: string) => {
-    setLoading(true);
-    const { error } = await supabase.auth.verifyOtp({
-      email,
-      token: value,
-      type: "signup",
-    });
     setLoading(false);
-    if (error) {
-      toast.error("That code is invalid or expired. Please try again.");
-      setCode("");
-      return;
-    }
-    toast.success("Account verified!");
+    toast.success("Account created! Welcome aboard.");
     onSuccess();
   };
-
-  if (step === "otp") {
-    return (
-      <div className="space-y-5">
-        <button
-          type="button"
-          onClick={() => { setStep("details"); setCode(""); }}
-          className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" /> Back
-        </button>
-        <div className="space-y-1.5 text-center">
-          <h1 className="text-2xl font-bold">Verify your account</h1>
-          <p className="text-sm text-muted-foreground">
-            Enter the 6-digit code sent to{" "}
-            <span className="font-medium text-foreground">{email}</span>
-          </p>
-        </div>
-        <div className="flex justify-center">
-          <InputOTP
-            maxLength={6}
-            value={code}
-            onChange={(v) => {
-              setCode(v);
-              if (v.length === 6) verify(v);
-            }}
-            disabled={loading}
-          >
-            <InputOTPGroup>
-              {[0, 1, 2, 3, 4, 5].map((i) => (
-                <InputOTPSlot key={i} index={i} className="h-11 w-11 text-base" />
-              ))}
-            </InputOTPGroup>
-          </InputOTP>
-        </div>
-        {loading && (
-          <div className="flex justify-center text-sm text-muted-foreground">
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Verifying…
-          </div>
-        )}
-        <div className="text-center text-sm text-muted-foreground">
-          {resendIn > 0 ? (
-            <span>Resend code in {resendIn}s</span>
-          ) : (
-            <button
-              type="button"
-              className="font-medium text-primary hover:underline"
-              onClick={resend}
-            >
-              Resend code
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <form onSubmit={register} className="space-y-5">
       <div className="space-y-1.5 text-center">
         <h1 className="text-2xl font-bold">Create your account</h1>
         <p className="text-sm text-muted-foreground">
-          We'll send a 6-digit code to verify your email.
+          Sign up and get started right away.
         </p>
       </div>
       <div className="space-y-2">
@@ -339,3 +258,4 @@ function SignupFlow({ onSuccess }: { onSuccess: () => void }) {
     </form>
   );
 }
+
