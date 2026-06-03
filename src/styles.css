@@ -153,3 +153,23 @@
 @utility glow {
   box-shadow: var(--glow-primary);
 }
+
+@keyframes blob-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -50px) scale(1.12); }
+  66% { transform: translate(-30px, 40px) scale(0.92); }
+}
+
+.animate-blob {
+  animation: blob-float 18s ease-in-out infinite;
+}
+.animate-blob-slow {
+  animation: blob-float 26s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-blob,
+  .animate-blob-slow {
+    animation: none;
+  }
+}
