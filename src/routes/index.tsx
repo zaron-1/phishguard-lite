@@ -18,8 +18,15 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   return (
-    <div className="min-h-screen bg-background">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+    <div className="relative min-h-screen overflow-hidden bg-background">
+      {/* Animated background */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="animate-blob absolute -left-24 -top-24 h-72 w-72 rounded-full bg-primary/25 blur-3xl sm:h-96 sm:w-96" />
+        <div className="animate-blob-slow absolute -right-24 top-1/3 h-72 w-72 rounded-full bg-chart-5/25 blur-3xl sm:h-96 sm:w-96" />
+        <div className="animate-blob absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-chart-2/20 blur-3xl sm:h-80 sm:w-80" />
+      </div>
+
+      <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-5 sm:px-6">
         <div className="flex items-center gap-2">
           <img src={logo} alt="PhishGuard" width={36} height={36} className="h-9 w-9" />
           <span className="text-lg font-bold text-cyber-gradient">PhishGuard Lite</span>
@@ -32,17 +39,17 @@ function Landing() {
         </div>
       </header>
 
-      <section className="mx-auto max-w-4xl px-6 pb-16 pt-16 text-center">
+      <section className="mx-auto max-w-4xl px-4 pb-16 pt-12 text-center sm:px-6 sm:pt-16">
         <span className="inline-block rounded-full border border-primary/30 bg-accent px-4 py-1 text-xs font-medium text-accent-foreground">
           AI-powered cybersecurity platform
         </span>
-        <h1 className="mt-6 text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl">
+        <h1 className="mt-6 text-3xl font-extrabold leading-tight tracking-tight sm:text-6xl">
           Stop <span className="text-cyber-gradient">phishing</span> before it hooks you.
         </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
+        <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg">
           Paste any link to get an instant AI risk verdict, then sharpen your skills with a cybersecurity AI tutor — all in one secure, lightweight app.
         </p>
-        <div className="mt-8 flex justify-center gap-3">
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Button asChild size="lg" className="glow">
             <Link to="/auth">
               Analyze a link <ArrowRight className="ml-2 h-4 w-4" />
@@ -50,6 +57,7 @@ function Landing() {
           </Button>
         </div>
       </section>
+
 
       <section className="mx-auto grid max-w-5xl gap-6 px-6 pb-24 md:grid-cols-3">
         {[
