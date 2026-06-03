@@ -48,7 +48,7 @@ function AuthPage() {
 
       <main className="flex flex-1 items-center justify-center px-4 pb-16 sm:px-6">
 
-        <div className="w-full max-w-sm rounded-2xl border bg-card p-8 shadow-sm">
+        <div className="w-full max-w-sm rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
           <Tabs value={mode} onValueChange={(v) => setMode(v as "login" | "signup")}>
             <TabsList className="mb-6 grid w-full grid-cols-2">
               <TabsTrigger value="login">Log in</TabsTrigger>
