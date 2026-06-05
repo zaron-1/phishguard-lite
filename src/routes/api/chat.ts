@@ -4,6 +4,8 @@ import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 
 type ChatRequestBody = { messages?: unknown };
 
+const GUEST_USER_ID = "00000000-0000-0000-0000-000000000000";
+
 const SYSTEM_PROMPT = `You are the PhishGuard Cybersecurity AI Tutor, an expert, friendly instructor.
 You teach cybersecurity from absolute beginner to advanced. Topics include: phishing & social engineering,
 malware, networking, ethical hacking, penetration testing tools, cloud security, cryptography, certifications
@@ -43,7 +45,7 @@ export const Route = createFileRoute("/api/chat")({
         const key = process.env.LOVABLE_API_KEY;
         if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
 
-        const userId = await resolveUserId(request);
+        const userId = (await resolveUserId(request)) ?? GUEST_USER_ID;
         const conversationId = crypto.randomUUID();
         const lastUserText = messageText(
           (messages as UIMessage[]).filter((m) => m.role === "user").at(-1),
@@ -57,7 +59,6 @@ export const Route = createFileRoute("/api/chat")({
             system: SYSTEM_PROMPT,
             messages: await convertToModelMessages(messages as UIMessage[]),
             onFinish: async ({ text }) => {
-              if (!userId) return;
               try {
                 const { supabaseAdmin } = await import(
                   "@/integrations/supabase/client.server"

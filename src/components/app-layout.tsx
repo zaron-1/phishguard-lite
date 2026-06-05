@@ -1,8 +1,7 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { LayoutDashboard, ShieldCheck, GraduationCap, LogOut } from "lucide-react";
+import { Home, LayoutDashboard, ShieldCheck, GraduationCap } from "lucide-react";
 import type { ReactNode } from "react";
 import logo from "@/assets/logo.png";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -15,11 +14,6 @@ const NAV = [
 export function AppLayout({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
-
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    navigate({ to: "/auth" });
-  };
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -47,8 +41,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
             );
           })}
         </nav>
-        <Button variant="ghost" className="justify-start gap-3" onClick={signOut}>
-          <LogOut className="h-4 w-4" /> Sign out
+        <Button variant="ghost" className="justify-start gap-3" onClick={() => navigate({ to: "/" })}>
+          <Home className="h-4 w-4" /> Home
         </Button>
       </aside>
 
@@ -64,8 +58,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
           <span className="hidden text-sm text-muted-foreground md:block">Smart cybersecurity, simplified.</span>
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Button variant="ghost" size="icon" className="md:hidden" onClick={signOut} aria-label="Sign out">
-              <LogOut className="h-5 w-5" />
+            <Button variant="ghost" size="icon" className="md:hidden" onClick={() => navigate({ to: "/" })} aria-label="Home">
+              <Home className="h-5 w-5" />
             </Button>
           </div>
         </header>

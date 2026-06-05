@@ -34,7 +34,7 @@ function Landing() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Button asChild>
-            <Link to="/auth">Get started</Link>
+            <Link to="/dashboard">Open app</Link>
           </Button>
         </div>
       </header>
@@ -51,7 +51,7 @@ function Landing() {
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Button asChild size="lg" className="glow">
-            <Link to="/auth">
+            <Link to="/analyzer">
               Analyze a link <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

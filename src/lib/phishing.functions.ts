@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { createLovableAiGatewayProvider } from "./ai-gateway.server";
+
+const GUEST_USER_ID = "00000000-0000-0000-0000-000000000000";
 
 const AnalyzeInput = z.object({
   url: z.string().trim().min(3).max(2048),
@@ -27,12 +27,12 @@ function extractJson(text: string): unknown {
 }
 
 export const analyzeUrl = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => AnalyzeInput.parse(input))
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data }) => {
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) throw new Error("AI is not configured");
 
+    const { createLovableAiGatewayProvider } = await import("./ai-gateway.server");
     const gateway = createLovableAiGatewayProvider(apiKey);
     const model = gateway("google/gemini-3-flash-preview");
 
@@ -85,16 +85,21 @@ Respond ONLY with a JSON object of this exact shape (no prose):
       checks: Array.isArray(parsed.checks) ? parsed.checks.slice(0, 12) : [],
     };
 
-    const { error } = await context.supabase.from("phishing_analyses").insert({
-      user_id: context.userId,
-      url: result.url,
-      verdict: result.verdict,
-      risk_score: result.riskScore,
-      explanation: result.explanation,
-      recommended_action: result.recommendedAction,
-      details: { checks: result.checks } as any,
-    });
-    if (error) console.error("Failed to save analysis:", error.message);
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { error } = await supabaseAdmin.from("phishing_analyses").insert({
+        user_id: GUEST_USER_ID,
+        url: result.url,
+        verdict: result.verdict,
+        risk_score: result.riskScore,
+        explanation: result.explanation,
+        recommended_action: result.recommendedAction,
+        details: { checks: result.checks } as any,
+      });
+      if (error) console.error("Failed to save analysis:", error.message);
+    } catch (error) {
+      console.error("Failed to persist guest analysis:", error);
+    }
 
     return result;
   });
