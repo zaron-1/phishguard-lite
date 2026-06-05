@@ -4,7 +4,6 @@ import { DefaultChatTransport } from "ai";
 import { useEffect, useRef, useState } from "react";
 import { GraduationCap, Loader2, SendHorizonal } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -21,20 +20,12 @@ const SUGGESTIONS = [
 ];
 
 function Tutor() {
-  const [token, setToken] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setToken(data.session?.access_token ?? null);
-    });
-  }, []);
 
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
-      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     }),
     onError: (err) => toast.error(err.message || "The tutor is unavailable right now."),
   });
