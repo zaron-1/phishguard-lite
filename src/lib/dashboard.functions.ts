@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+
+const GUEST_USER_ID = "00000000-0000-0000-0000-000000000000";
 
 export type RecentAnalysis = {
   id: string;
@@ -17,23 +18,22 @@ export type DashboardData = {
 };
 
 export const getDashboard = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<DashboardData> => {
-    const { supabase, userId } = context;
+  .handler(async (): Promise<DashboardData> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const [analysesRes, chatsRes, recentRes] = await Promise.all([
-      supabase
+      supabaseAdmin
         .from("phishing_analyses")
         .select("verdict", { count: "exact" })
-        .eq("user_id", userId),
-      supabase
+        .eq("user_id", GUEST_USER_ID),
+      supabaseAdmin
         .from("ai_chats")
         .select("id", { count: "exact", head: true })
-        .eq("user_id", userId),
-      supabase
+        .eq("user_id", GUEST_USER_ID),
+      supabaseAdmin
         .from("phishing_analyses")
         .select("id, url, verdict, risk_score, created_at")
-        .eq("user_id", userId)
+        .eq("user_id", GUEST_USER_ID)
         .order("created_at", { ascending: false })
         .limit(5),
     ]);
