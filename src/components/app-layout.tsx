@@ -17,6 +17,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
 
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  }
+
   return (
     <div className="flex min-h-screen bg-background">
       <aside className="hidden w-64 flex-col border-r bg-sidebar p-4 md:flex">
@@ -43,8 +48,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
             );
           })}
         </nav>
-        <Button variant="ghost" className="justify-start gap-3" onClick={() => navigate({ to: "/" })}>
-          <Home className="h-4 w-4" /> Home
+        <Button variant="ghost" className="justify-start gap-3" onClick={handleSignOut}>
+          <LogOut className="h-4 w-4" /> Sign out
         </Button>
       </aside>
 
@@ -60,8 +65,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
           <span className="hidden text-sm text-muted-foreground md:block">Smart cybersecurity, simplified.</span>
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Button variant="ghost" size="icon" className="md:hidden" onClick={() => navigate({ to: "/" })} aria-label="Home">
-              <Home className="h-5 w-5" />
+            <Button variant="ghost" size="icon" className="md:hidden" onClick={handleSignOut} aria-label="Sign out">
+              <LogOut className="h-5 w-5" />
             </Button>
           </div>
         </header>
