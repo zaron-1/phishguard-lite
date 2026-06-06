@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Home, LayoutDashboard, ShieldCheck, GraduationCap } from "lucide-react";
+import { Home, LayoutDashboard, ShieldCheck, GraduationCap, Brain } from "lucide-react";
 import type { ReactNode } from "react";
 import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/analyzer", label: "Phishing Analyzer", icon: ShieldCheck },
   { to: "/tutor", label: "AI Tutor", icon: GraduationCap },
+  { to: "/quiz", label: "Quiz", icon: Brain },
 ] as const;
 
 export function AppLayout({ children }: { children: ReactNode }) {
