@@ -1,7 +1,8 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Home, LayoutDashboard, ShieldCheck, GraduationCap, Brain } from "lucide-react";
+import { LogOut, LayoutDashboard, ShieldCheck, GraduationCap, Brain } from "lucide-react";
 import type { ReactNode } from "react";
 import logo from "@/assets/logo.png";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 
