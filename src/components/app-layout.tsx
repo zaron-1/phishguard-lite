@@ -1,13 +1,25 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { LogOut, LayoutDashboard, ShieldCheck, GraduationCap, Brain } from "lucide-react";
+import {
+  LogOut,
+  LayoutDashboard,
+  ShieldCheck,
+  GraduationCap,
+  Brain,
+  User,
+  History,
+  Shield,
+} from "lucide-react";
 import type { ReactNode } from "react";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useRole } from "@/hooks/use-role";
 
-const NAV = [
+const USER_NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/profile", label: "My Profile", icon: User },
+  { to: "/search-history", label: "Search History", icon: History },
   { to: "/analyzer", label: "Phishing Analyzer", icon: ShieldCheck },
   { to: "/tutor", label: "AI Tutor", icon: GraduationCap },
   { to: "/quiz", label: "Quiz", icon: Brain },
@@ -16,11 +28,17 @@ const NAV = [
 export function AppLayout({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
+  const { isAdmin } = useRole();
 
   async function handleSignOut() {
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   }
+
+  const nav = [
+    ...USER_NAV,
+    ...(isAdmin ? [{ to: "/admin", label: "Admin Panel", icon: Shield } as const] : []),
+  ];
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -30,7 +48,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
           <span className="text-lg font-bold text-cyber-gradient">PhishGuard</span>
         </Link>
         <nav className="flex flex-1 flex-col gap-1">
-          {NAV.map(({ to, label, icon: Icon }) => {
+          {nav.map(({ to, label, icon: Icon }) => {
             const active = pathname === to;
             return (
               <Link
@@ -44,6 +62,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
               >
                 <Icon className="h-4 w-4" />
                 {label}
+                {to === "/admin" && (
+                  <span className="ml-auto rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+                    ADMIN
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -55,8 +78,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
       <div className="flex flex-1 flex-col">
         <header className="flex items-center justify-between border-b px-4 py-3">
-          <nav className="flex gap-1 md:hidden">
-            {NAV.map(({ to, icon: Icon }) => (
+          <nav className="flex gap-1 overflow-x-auto md:hidden">
+            {nav.map(({ to, icon: Icon }) => (
               <Link key={to} to={to} className="rounded-lg p-2 text-sidebar-foreground hover:bg-sidebar-accent">
                 <Icon className="h-5 w-5" />
               </Link>
