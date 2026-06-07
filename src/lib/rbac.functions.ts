@@ -148,6 +148,7 @@ export const addSearchHistory = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     let ip: string | null = null;
     try {
+      const { getRequestIP } = await import("@tanstack/react-start/server");
       ip = getRequestIP({ xForwardedFor: true }) ?? null;
     } catch {
       ip = null;
