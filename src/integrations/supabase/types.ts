@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_actions: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          details: Json
+          id: string
+          target_user_id: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          details?: Json
+          id?: string
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          details?: Json
+          id?: string
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
       ai_chats: {
         Row: {
           content: string
@@ -79,30 +106,93 @@ export type Database = {
       }
       profiles: {
         Row: {
+          bio: string | null
           created_at: string
           display_name: string | null
           email: string | null
           id: string
           phone: string | null
+          profile_picture: string | null
+          status: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          bio?: string | null
           created_at?: string
           display_name?: string | null
           email?: string | null
           id?: string
           phone?: string | null
+          profile_picture?: string | null
+          status?: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          bio?: string | null
           created_at?: string
           display_name?: string | null
           email?: string | null
           id?: string
           phone?: string | null
+          profile_picture?: string | null
+          status?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      search_history: {
+        Row: {
+          created_at: string
+          id: string
+          ip_address: string | null
+          search_category: string | null
+          search_query: string
+          search_results_count: number
+          searched_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          search_category?: string | null
+          search_query: string
+          search_results_count?: number
+          searched_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          search_category?: string | null
+          search_query?: string
+          search_results_count?: number
+          searched_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
         }
         Relationships: []
@@ -112,10 +202,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -242,6 +338,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
