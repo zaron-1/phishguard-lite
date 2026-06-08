@@ -4,7 +4,9 @@ import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 
 type ChatRequestBody = { messages?: unknown };
 
-const GUEST_USER_ID = "00000000-0000-0000-0000-000000000000";
+const MAX_MESSAGES = 50;
+const MAX_TOTAL_CHARS = 24000;
+
 
 const SYSTEM_PROMPT = `You are the PhishGuard Cybersecurity AI Tutor, an expert, friendly instructor.
 You teach cybersecurity from absolute beginner to advanced. Topics include: phishing & social engineering,
@@ -42,10 +44,29 @@ export const Route = createFileRoute("/api/chat")({
           return new Response("Messages are required", { status: 400 });
         }
 
-        const key = process.env.LOVABLE_API_KEY;
-        if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
+        if (messages.length === 0 || messages.length > MAX_MESSAGES) {
+          return new Response("Invalid number of messages", { status: 400 });
+        }
 
-        const userId = (await resolveUserId(request)) ?? GUEST_USER_ID;
+        const totalChars = (messages as UIMessage[]).reduce(
+          (sum, m) => sum + messageText(m).length,
+          0,
+        );
+        if (totalChars > MAX_TOTAL_CHARS) {
+          return new Response("Message payload too large", { status: 413 });
+        }
+
+        const userId = await resolveUserId(request);
+        if (!userId) {
+          return new Response("Unauthorized", { status: 401 });
+        }
+
+        const key = process.env.LOVABLE_API_KEY;
+        if (!key) {
+          console.error("[chat] LOVABLE_API_KEY is not set");
+          return new Response("AI service is not configured", { status: 500 });
+        }
+
         const conversationId = crypto.randomUUID();
         const lastUserText = messageText(
           (messages as UIMessage[]).filter((m) => m.role === "user").at(-1),

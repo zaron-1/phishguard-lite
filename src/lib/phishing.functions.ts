@@ -1,8 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { generateText } from "ai";
 import { z } from "zod";
-
-const GUEST_USER_ID = "00000000-0000-0000-0000-000000000000";
 
 const AnalyzeInput = z.object({
   url: z.string().trim().min(3).max(2048),
@@ -27,8 +26,9 @@ function extractJson(text: string): unknown {
 }
 
 export const analyzeUrl = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => AnalyzeInput.parse(input))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) throw new Error("AI is not configured");
 
@@ -86,9 +86,8 @@ Respond ONLY with a JSON object of this exact shape (no prose):
     };
 
     try {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const { error } = await supabaseAdmin.from("phishing_analyses").insert({
-        user_id: GUEST_USER_ID,
+      const { error } = await context.supabase.from("phishing_analyses").insert({
+        user_id: context.userId,
         url: result.url,
         verdict: result.verdict,
         risk_score: result.riskScore,
@@ -98,7 +97,7 @@ Respond ONLY with a JSON object of this exact shape (no prose):
       });
       if (error) console.error("Failed to save analysis:", error.message);
     } catch (error) {
-      console.error("Failed to persist guest analysis:", error);
+      console.error("Failed to persist analysis:", error);
     }
 
     return result;
