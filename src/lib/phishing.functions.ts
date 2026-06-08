@@ -1,8 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { generateText } from "ai";
 import { z } from "zod";
-
-const GUEST_USER_ID = "00000000-0000-0000-0000-000000000000";
 
 const AnalyzeInput = z.object({
   url: z.string().trim().min(3).max(2048),
