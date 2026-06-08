@@ -86,9 +86,8 @@ Respond ONLY with a JSON object of this exact shape (no prose):
     };
 
     try {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const { error } = await supabaseAdmin.from("phishing_analyses").insert({
-        user_id: GUEST_USER_ID,
+      const { error } = await context.supabase.from("phishing_analyses").insert({
+        user_id: context.userId,
         url: result.url,
         verdict: result.verdict,
         risk_score: result.riskScore,
@@ -98,7 +97,7 @@ Respond ONLY with a JSON object of this exact shape (no prose):
       });
       if (error) console.error("Failed to save analysis:", error.message);
     } catch (error) {
-      console.error("Failed to persist guest analysis:", error);
+      console.error("Failed to persist analysis:", error);
     }
 
     return result;
