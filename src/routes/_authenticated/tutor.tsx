@@ -26,6 +26,12 @@ function Tutor() {
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
+      headers: async () => {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data } = await supabase.auth.getSession();
+        const token = data.session?.access_token;
+        return token ? { Authorization: `Bearer ${token}` } : {};
+      },
     }),
     onError: (err) => toast.error(err.message || "The tutor is unavailable right now."),
   });
