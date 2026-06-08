@@ -4,7 +4,9 @@ import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 
 type ChatRequestBody = { messages?: unknown };
 
-const GUEST_USER_ID = "00000000-0000-0000-0000-000000000000";
+const MAX_MESSAGES = 50;
+const MAX_TOTAL_CHARS = 24000;
+
 
 const SYSTEM_PROMPT = `You are the PhishGuard Cybersecurity AI Tutor, an expert, friendly instructor.
 You teach cybersecurity from absolute beginner to advanced. Topics include: phishing & social engineering,
