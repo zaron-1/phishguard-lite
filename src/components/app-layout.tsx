@@ -8,6 +8,7 @@ import {
   User,
   History,
   Shield,
+  KeyRound,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import logo from "@/assets/logo.png";
