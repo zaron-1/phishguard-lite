@@ -26,8 +26,9 @@ function extractJson(text: string): unknown {
 }
 
 export const analyzeUrl = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => AnalyzeInput.parse(input))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) throw new Error("AI is not configured");
 
