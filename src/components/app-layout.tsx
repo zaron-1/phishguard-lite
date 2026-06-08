@@ -8,6 +8,7 @@ import {
   User,
   History,
   Shield,
+  KeyRound,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import logo from "@/assets/logo.png";
@@ -21,6 +22,7 @@ const USER_NAV = [
   { to: "/profile", label: "My Profile", icon: User },
   { to: "/search-history", label: "Search History", icon: History },
   { to: "/analyzer", label: "Phishing Analyzer", icon: ShieldCheck },
+  { to: "/vault", label: "Password Vault", icon: KeyRound },
   { to: "/tutor", label: "AI Tutor", icon: GraduationCap },
   { to: "/quiz", label: "Quiz", icon: Brain },
 ] as const;

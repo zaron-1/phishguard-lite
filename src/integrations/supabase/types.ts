@@ -197,6 +197,42 @@ export type Database = {
         }
         Relationships: []
       }
+      vault_credentials: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          password: string
+          site_name: string
+          site_url: string | null
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          password: string
+          site_name: string
+          site_url?: string | null
+          updated_at?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          password?: string
+          site_name?: string
+          site_url?: string | null
+          updated_at?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
