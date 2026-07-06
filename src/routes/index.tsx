@@ -45,8 +45,18 @@ function Landing() {
         <span className="inline-block rounded-full border border-primary/30 bg-accent px-4 py-1 text-xs font-medium text-accent-foreground">
           AI-powered cybersecurity platform
         </span>
-        <h1 className="mt-6 text-3xl font-extrabold leading-tight tracking-tight sm:text-6xl">
-          Stop <span className="text-cyber-gradient">phishing</span> before it hooks you.
+        <h1 className="mt-6 text-3xl font-extrabold leading-tight tracking-tight sm:text-6xl headline-float">
+          <span className="animate-word" style={{ animationDelay: "0.05s" }}>Stop</span>{" "}
+          <span
+            className="shimmer-word animate-word text-cyber-animated"
+            style={{ animationDelay: "0.22s" }}
+          >
+            phishing
+          </span>{" "}
+          <span className="animate-word" style={{ animationDelay: "0.42s" }}>before</span>{" "}
+          <span className="animate-word" style={{ animationDelay: "0.56s" }}>it</span>{" "}
+          <span className="animate-word" style={{ animationDelay: "0.7s" }}>hooks</span>{" "}
+          <span className="animate-word" style={{ animationDelay: "0.84s" }}>you.</span>
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg">
           Paste any link to get an instant AI risk verdict, then sharpen your skills with a cybersecurity AI tutor — all in one secure, lightweight app.
