@@ -57,6 +57,7 @@ function Landing() {
               Analyze a link <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
+          <InstallButton size="lg" variant="outline" />
         </div>
       </section>
 
