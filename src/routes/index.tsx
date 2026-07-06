@@ -4,6 +4,7 @@ import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { InstallButton } from "@/components/install-button";
+import { AnimatedBackground } from "@/components/animated-background";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -26,6 +27,7 @@ function Landing() {
         <div className="animate-blob-slow absolute -right-24 top-1/3 h-72 w-72 rounded-full bg-chart-5/25 blur-3xl sm:h-96 sm:w-96" />
         <div className="animate-blob absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-chart-2/20 blur-3xl sm:h-80 sm:w-80" />
       </div>
+      <AnimatedBackground />
 
       <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-5 sm:px-6">
         <div className="flex items-center gap-2">
