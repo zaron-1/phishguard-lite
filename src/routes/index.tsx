@@ -47,11 +47,8 @@ function Landing() {
         </span>
         <h1 className="mt-6 text-3xl font-extrabold leading-tight tracking-tight sm:text-6xl headline-float">
           <span className="animate-word" style={{ animationDelay: "0.05s" }}>Stop</span>{" "}
-          <span
-            className="shimmer-word animate-word text-cyber-animated"
-            style={{ animationDelay: "0.22s" }}
-          >
-            phishing
+          <span className="animate-word" style={{ animationDelay: "0.22s" }}>
+            <span className="shimmer-word text-cyber-animated">phishing</span>
           </span>{" "}
           <span className="animate-word" style={{ animationDelay: "0.42s" }}>before</span>{" "}
           <span className="animate-word" style={{ animationDelay: "0.56s" }}>it</span>{" "}
