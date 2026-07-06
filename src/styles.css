@@ -208,6 +208,7 @@
 
 .shimmer-word {
   position: relative;
+  display: inline-block;
   overflow: hidden;
 }
 .shimmer-word::after {
