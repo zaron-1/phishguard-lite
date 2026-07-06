@@ -227,6 +227,49 @@
   pointer-events: none;
 }
 
+/* Fanciful animated background: glow particles + shimmer lines */
+@keyframes particle-rise {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: var(--p-opacity, 0.6); }
+  90% { opacity: var(--p-opacity, 0.6); }
+  100% { transform: translateY(-120vh) translateX(var(--p-drift, 20px)); opacity: 0; }
+}
+@keyframes line-sweep {
+  0% { transform: translateX(-30%); opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { transform: translateX(130%); opacity: 0; }
+}
+
+.fx-particle {
+  position: absolute;
+  bottom: -10px;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--primary) 85%, white) 0%,
+    color-mix(in oklab, var(--primary) 40%, transparent) 60%,
+    transparent 70%
+  );
+  will-change: transform, opacity;
+  animation: particle-rise var(--p-duration, 16s) linear infinite;
+  animation-delay: var(--p-delay, 0s);
+}
+
+.fx-line {
+  position: absolute;
+  height: 1px;
+  width: 40%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, var(--primary) 60%, transparent),
+    transparent
+  );
+  will-change: transform, opacity;
+  animation: line-sweep var(--l-duration, 9s) ease-in-out infinite;
+  animation-delay: var(--l-delay, 0s);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-blob,
   .animate-blob-slow {
@@ -239,5 +282,10 @@
     animation: none;
     opacity: 1;
   }
+  .fx-particle,
+  .fx-line {
+    display: none;
+  }
 }
+
 
