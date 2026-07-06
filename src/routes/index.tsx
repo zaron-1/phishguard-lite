@@ -3,6 +3,7 @@ import { ShieldCheck, GraduationCap, LayoutDashboard, ArrowRight } from "lucide-
 import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { InstallButton } from "@/components/install-button";
 
 export const Route = createFileRoute("/")({
   head: () => ({
