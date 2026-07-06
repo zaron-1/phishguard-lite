@@ -167,9 +167,76 @@
   animation: blob-float 26s ease-in-out infinite;
 }
 
+/* Fanciful headline animations */
+@keyframes word-rise {
+  0% { opacity: 0; transform: translateY(28px) rotate(2deg); filter: blur(6px); }
+  100% { opacity: 1; transform: translateY(0) rotate(0); filter: blur(0); }
+}
+@keyframes gradient-pan {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes soft-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes shimmer-sweep {
+  0% { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+  40% { opacity: 0.7; }
+  100% { transform: translateX(220%) skewX(-18deg); opacity: 0; }
+}
+
+.animate-word {
+  display: inline-block;
+  opacity: 0;
+  animation: word-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+.headline-float {
+  animation: soft-float 5s ease-in-out infinite;
+  animation-delay: 1.4s;
+}
+
+.text-cyber-animated {
+  background-image: var(--gradient-cyber);
+  background-size: 220% 220%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: gradient-pan 5s ease-in-out infinite;
+}
+
+.shimmer-word {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer-word::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, var(--primary) 55%, white) 50%,
+    transparent
+  );
+  mix-blend-mode: screen;
+  animation: shimmer-sweep 3.6s ease-in-out infinite;
+  animation-delay: 1.8s;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-blob,
   .animate-blob-slow {
     animation: none;
   }
+  .animate-word,
+  .headline-float,
+  .text-cyber-animated,
+  .shimmer-word::after {
+    animation: none;
+    opacity: 1;
+  }
 }
+
