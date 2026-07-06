@@ -4,6 +4,7 @@ import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { InstallButton } from "@/components/install-button";
+import { AnimatedBackground } from "@/components/animated-background";
 
 export const Route = createFileRoute("/")({
   head: () => ({
