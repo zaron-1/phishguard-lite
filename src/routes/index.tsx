@@ -34,6 +34,7 @@ function Landing() {
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
+          <InstallButton variant="outline" size="sm" className="hidden sm:inline-flex" />
           <Button asChild>
             <Link to="/dashboard">Open app</Link>
           </Button>
