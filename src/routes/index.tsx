@@ -3,6 +3,7 @@ import { ShieldCheck, GraduationCap, LayoutDashboard, ArrowRight } from "lucide-
 import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { InstallButton } from "@/components/install-button";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,6 +34,7 @@ function Landing() {
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
+          <InstallButton variant="outline" size="sm" className="hidden sm:inline-flex" />
           <Button asChild>
             <Link to="/dashboard">Open app</Link>
           </Button>
@@ -55,6 +57,7 @@ function Landing() {
               Analyze a link <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
+          <InstallButton size="lg" variant="outline" />
         </div>
       </section>
 
