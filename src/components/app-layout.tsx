@@ -15,6 +15,7 @@ import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { InstallButton } from "@/components/install-button";
 import { useRole } from "@/hooks/use-role";
 
 const USER_NAV = [
