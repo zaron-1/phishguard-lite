@@ -79,7 +79,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </Button>
       </aside>
 
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between gap-2 border-b px-3 py-3 md:px-4">
           <Link to="/dashboard" className="flex items-center gap-2 md:hidden">
             <img src={logo} alt="PhishGuard" width={28} height={28} className="h-7 w-7 shrink-0" />
