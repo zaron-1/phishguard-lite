@@ -44,8 +44,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
   ];
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <aside className="hidden w-64 flex-col border-r bg-sidebar p-4 md:flex">
+    <div className="flex min-h-screen w-full bg-background">
+      <aside className="hidden w-64 shrink-0 flex-col border-r bg-sidebar p-4 md:flex">
         <Link to="/dashboard" className="mb-8 flex items-center gap-2 px-2">
           <img src={logo} alt="PhishGuard" width={36} height={36} className="h-9 w-9" />
           <span className="text-lg font-bold text-cyber-gradient">PhishGuard</span>
@@ -79,7 +79,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </Button>
       </aside>
 
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between gap-2 border-b px-3 py-3 md:px-4">
           <Link to="/dashboard" className="flex items-center gap-2 md:hidden">
             <img src={logo} alt="PhishGuard" width={28} height={28} className="h-7 w-7 shrink-0" />
@@ -116,7 +116,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
           })}
         </nav>
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-8">{children}</main>
+        <main className="w-full min-w-0 flex-1 p-4 md:p-8">{children}</main>
       </div>
     </div>
   );
