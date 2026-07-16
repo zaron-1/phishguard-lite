@@ -44,8 +44,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
   ];
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <aside className="hidden w-64 flex-col border-r bg-sidebar p-4 md:flex">
+    <div className="flex min-h-screen w-full bg-background">
+      <aside className="hidden w-64 shrink-0 flex-col border-r bg-sidebar p-4 md:flex">
         <Link to="/dashboard" className="mb-8 flex items-center gap-2 px-2">
           <img src={logo} alt="PhishGuard" width={36} height={36} className="h-9 w-9" />
           <span className="text-lg font-bold text-cyber-gradient">PhishGuard</span>
