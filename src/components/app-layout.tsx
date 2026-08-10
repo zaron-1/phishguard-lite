@@ -37,10 +37,24 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const { isAdmin } = useRole();
 
+  const router = useRouter();
+  const qc = useQueryClient();
+  const [refreshing, setRefreshing] = useState(false);
+
+  async function handleRefresh() {
+    setRefreshing(true);
+    try {
+      await Promise.all([qc.invalidateQueries(), router.invalidate()]);
+    } finally {
+      setRefreshing(false);
+    }
+  }
+
   async function handleSignOut() {
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   }
+
 
   const nav = [
     ...USER_NAV,
