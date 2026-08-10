@@ -105,7 +105,18 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </Link>
           <span className="hidden text-sm text-muted-foreground md:block">Smart cybersecurity, simplified.</span>
           <div className="flex items-center gap-1.5">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleRefresh}
+              disabled={refreshing}
+              aria-label="Refresh workspace"
+              title="Refresh workspace"
+            >
+              <RefreshCw className={`h-5 w-5 ${refreshing ? "animate-spin" : ""}`} />
+            </Button>
             <InstallButton variant="outline" size="sm" />
+
             <ThemeToggle />
             <Button variant="ghost" size="icon" className="md:hidden" onClick={handleSignOut} aria-label="Sign out">
               <LogOut className="h-5 w-5" />
