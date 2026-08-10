@@ -1,4 +1,6 @@
-import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate, useRouter } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import {
   LogOut,
   LayoutDashboard,
@@ -9,6 +11,7 @@ import {
   History,
   Shield,
   KeyRound,
+  RefreshCw,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import logo from "@/assets/logo.png";
@@ -17,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { InstallButton } from "@/components/install-button";
 import { useRole } from "@/hooks/use-role";
+
 
 const USER_NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
