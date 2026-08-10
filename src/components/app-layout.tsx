@@ -1,4 +1,6 @@
-import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate, useRouter } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import {
   LogOut,
   LayoutDashboard,
@@ -9,6 +11,7 @@ import {
   History,
   Shield,
   KeyRound,
+  RefreshCw,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import logo from "@/assets/logo.png";
@@ -17,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { InstallButton } from "@/components/install-button";
 import { useRole } from "@/hooks/use-role";
+
 
 const USER_NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -33,10 +37,24 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const { isAdmin } = useRole();
 
+  const router = useRouter();
+  const qc = useQueryClient();
+  const [refreshing, setRefreshing] = useState(false);
+
+  async function handleRefresh() {
+    setRefreshing(true);
+    try {
+      await Promise.all([qc.invalidateQueries(), router.invalidate()]);
+    } finally {
+      setRefreshing(false);
+    }
+  }
+
   async function handleSignOut() {
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   }
+
 
   const nav = [
     ...USER_NAV,
@@ -87,7 +105,18 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </Link>
           <span className="hidden text-sm text-muted-foreground md:block">Smart cybersecurity, simplified.</span>
           <div className="flex items-center gap-1.5">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleRefresh}
+              disabled={refreshing}
+              aria-label="Refresh workspace"
+              title="Refresh workspace"
+            >
+              <RefreshCw className={`h-5 w-5 ${refreshing ? "animate-spin" : ""}`} />
+            </Button>
             <InstallButton variant="outline" size="sm" />
+
             <ThemeToggle />
             <Button variant="ghost" size="icon" className="md:hidden" onClick={handleSignOut} aria-label="Sign out">
               <LogOut className="h-5 w-5" />

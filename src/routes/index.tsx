@@ -21,13 +21,17 @@ export const Route = createFileRoute("/")({
 function Landing() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
-      {/* Animated background */}
+      {/* Animated colourful clouds */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="animate-blob absolute -left-24 -top-24 h-72 w-72 rounded-full bg-primary/25 blur-3xl sm:h-96 sm:w-96" />
-        <div className="animate-blob-slow absolute -right-24 top-1/3 h-72 w-72 rounded-full bg-chart-5/25 blur-3xl sm:h-96 sm:w-96" />
-        <div className="animate-blob absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-chart-2/20 blur-3xl sm:h-80 sm:w-80" />
+        <div className="animate-blob absolute -left-24 -top-24 h-72 w-72 rounded-full bg-primary/30 blur-3xl sm:h-96 sm:w-96" />
+        <div className="animate-blob-slow absolute -right-24 top-1/4 h-72 w-72 rounded-full bg-chart-5/30 blur-3xl sm:h-96 sm:w-96" />
+        <div className="animate-blob absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-chart-2/25 blur-3xl sm:h-80 sm:w-80" style={{ animationDelay: "-6s" }} />
+        <div className="animate-blob-slow absolute -bottom-16 -right-10 h-64 w-64 rounded-full bg-chart-4/30 blur-3xl sm:h-96 sm:w-96" style={{ animationDelay: "-11s" }} />
+        <div className="animate-blob absolute left-1/2 top-1/2 h-56 w-56 -translate-x-1/2 rounded-full bg-chart-1/25 blur-3xl sm:h-80 sm:w-80" style={{ animationDelay: "-3s" }} />
+        <div className="animate-blob-slow absolute right-1/4 -top-10 h-56 w-56 rounded-full bg-chart-3/25 blur-3xl sm:h-72 sm:w-72" style={{ animationDelay: "-15s" }} />
       </div>
       <AnimatedBackground />
+
 
       <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-5 sm:px-6">
         <div className="flex items-center gap-2">
@@ -38,8 +42,9 @@ function Landing() {
           <ThemeToggle />
           <InstallButton variant="outline" size="sm" className="hidden sm:inline-flex" />
           <Button asChild>
-            <Link to="/dashboard">Open app</Link>
+            <Link to="/auth">Open app</Link>
           </Button>
+
         </div>
       </header>
 

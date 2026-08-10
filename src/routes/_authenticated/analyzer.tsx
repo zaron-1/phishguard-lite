@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   ShieldCheck,
@@ -8,6 +8,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   XCircle,
+  History,
+  RotateCcw,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -16,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { analyzeUrl, type AnalysisResult } from "@/lib/phishing.functions";
+import { getMySearchHistory, addSearchHistory } from "@/lib/rbac.functions";
 
 export const Route = createFileRoute("/_authenticated/analyzer")({
   head: () => ({ meta: [{ title: "Phishing Analyzer — PhishGuard Lite" }] }),
@@ -44,11 +47,27 @@ function Analyzer() {
   const [url, setUrl] = useState("");
   const queryClient = useQueryClient();
   const analyze = useServerFn(analyzeUrl);
+  const fetchHistory = useServerFn(getMySearchHistory);
+  const saveSearch = useServerFn(addSearchHistory);
+
+  const { data: history } = useQuery({
+    queryKey: ["search-history"],
+    queryFn: () => fetchHistory(),
+  });
+
+  const recent = (history ?? []).filter((r) => r.searchCategory === "url").slice(0, 8);
 
   const mutation = useMutation<AnalysisResult, Error, string>({
     mutationFn: (value) => analyze({ data: { url: value } }),
-    onSuccess: () => {
+    onSuccess: async (_res, value) => {
+      try {
+        await saveSearch({ data: { searchQuery: value, searchCategory: "url", searchResultsCount: 1 } });
+      } catch {
+        /* history is best-effort */
+      }
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["search-history"] });
+      queryClient.invalidateQueries({ queryKey: ["user-dashboard"] });
     },
     onError: (err) => toast.error(err.message || "Analysis failed."),
   });
@@ -89,6 +108,38 @@ function Analyzer() {
           Analyze
         </Button>
       </form>
+
+      {recent.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <History className="h-4 w-4 text-primary" /> Recent searches
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {recent.map((r) => (
+                <Button
+                  key={r.id}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="max-w-full"
+                  disabled={mutation.isPending}
+                  onClick={() => {
+                    setUrl(r.searchQuery);
+                    mutation.mutate(r.searchQuery);
+                  }}
+                  title={`Re-analyze ${r.searchQuery}`}
+                >
+                  <RotateCcw className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate">{r.searchQuery}</span>
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {result && (
         <Card>
