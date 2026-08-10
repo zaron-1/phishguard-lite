@@ -42,8 +42,9 @@ function Landing() {
           <ThemeToggle />
           <InstallButton variant="outline" size="sm" className="hidden sm:inline-flex" />
           <Button asChild>
-            <Link to="/dashboard">Open app</Link>
+            <Link to="/auth">Open app</Link>
           </Button>
+
         </div>
       </header>
 
