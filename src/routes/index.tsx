@@ -54,14 +54,14 @@ function Landing() {
     <div className="relative min-h-screen overflow-hidden bg-background">
       {/* Rich multicolour animated background blobs */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="animate-blob absolute -left-20 -top-20 h-80 w-80 rounded-full bg-primary/35 blur-3xl sm:h-[28rem] sm:w-[28rem]" />
-        <div className="animate-blob-slow absolute -right-20 top-1/4 h-80 w-80 rounded-full bg-chart-5/40 blur-3xl sm:h-[28rem] sm:w-[28rem]" />
-        <div className="animate-blob absolute bottom-12 left-1/4 h-72 w-72 rounded-full bg-chart-2/30 blur-3xl sm:h-96 sm:w-96" style={{ animationDelay: "-6s" }} />
-        <div className="animate-blob-slow absolute -bottom-16 right-0 h-72 w-72 rounded-full bg-[var(--color-violet)]/35 blur-3xl sm:h-[26rem] sm:w-[26rem]" style={{ animationDelay: "-11s" }} />
-        <div className="animate-blob absolute left-1/2 top-1/2 h-60 w-60 -translate-x-1/2 rounded-full bg-[var(--color-amber)]/25 blur-3xl sm:h-[22rem] sm:w-[22rem]" style={{ animationDelay: "-3s" }} />
-        <div className="animate-blob-slow absolute right-1/4 -top-12 h-60 w-60 rounded-full bg-[var(--color-rose)]/30 blur-3xl sm:h-80 sm:w-80" style={{ animationDelay: "-15s" }} />
-        <div className="animate-blob absolute left-1/3 top-1/3 h-52 w-52 rounded-full bg-[var(--color-cyan)]/25 blur-3xl sm:h-72 sm:w-72" style={{ animationDelay: "-9s" }} />
-        <div className="animate-blob-slow absolute bottom-1/4 left-0 h-48 w-48 rounded-full bg-[var(--color-emerald)]/25 blur-3xl sm:h-64 sm:w-64" style={{ animationDelay: "-20s" }} />
+        <div className="animate-blob absolute -left-20 -top-20 h-80 w-80 rounded-full bg-primary/50 blur-3xl sm:h-[28rem] sm:w-[28rem]" />
+        <div className="animate-blob-slow absolute -right-20 top-1/4 h-80 w-80 rounded-full bg-chart-5/55 blur-3xl sm:h-[28rem] sm:w-[28rem]" />
+        <div className="animate-blob absolute bottom-12 left-1/4 h-72 w-72 rounded-full bg-chart-2/45 blur-3xl sm:h-96 sm:w-96" style={{ animationDelay: "-6s" }} />
+        <div className="animate-blob-slow absolute -bottom-16 right-0 h-72 w-72 rounded-full bg-[var(--color-violet)]/50 blur-3xl sm:h-[26rem] sm:w-[26rem]" style={{ animationDelay: "-11s" }} />
+        <div className="animate-blob absolute left-1/2 top-1/2 h-60 w-60 -translate-x-1/2 rounded-full bg-[var(--color-amber)]/40 blur-3xl sm:h-[22rem] sm:w-[22rem]" style={{ animationDelay: "-3s" }} />
+        <div className="animate-blob-slow absolute right-1/4 -top-12 h-60 w-60 rounded-full bg-[var(--color-rose)]/45 blur-3xl sm:h-80 sm:w-80" style={{ animationDelay: "-15s" }} />
+        <div className="animate-blob absolute left-1/3 top-1/3 h-52 w-52 rounded-full bg-[var(--color-cyan)]/40 blur-3xl sm:h-72 sm:w-72" style={{ animationDelay: "-9s" }} />
+        <div className="animate-blob-slow absolute bottom-1/4 left-0 h-48 w-48 rounded-full bg-[var(--color-emerald)]/40 blur-3xl sm:h-64 sm:w-64" style={{ animationDelay: "-20s" }} />
       </div>
       <AnimatedBackground />
 
