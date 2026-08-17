@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { InstallButton } from "@/components/install-button";
 import { AnimatedBackground } from "@/components/animated-background";
+import { getLandingContent } from "@/lib/cms.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -15,6 +16,7 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "AI-powered phishing detection, cybersecurity learning, and a secure password vault." },
     ],
   }),
+  loader: () => getLandingContent(),
   component: Landing,
 });
 
@@ -50,6 +52,8 @@ const FEATURES = [
 ];
 
 function Landing() {
+  const content = Route.useLoaderData();
+  const words = content.headline.split(/\s+/).filter(Boolean);
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       {/* Rich multicolour animated background blobs */}
@@ -79,28 +83,38 @@ function Landing() {
         </div>
       </header>
 
+      {content.announcement && (
+        <div className="mx-auto max-w-4xl px-4 sm:px-6">
+          <div className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-center text-sm font-medium">
+            {content.announcement}
+          </div>
+        </div>
+      )}
+
       <section className="mx-auto max-w-4xl px-4 pb-12 pt-10 text-center sm:px-6 sm:pt-14">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-accent px-4 py-1.5 text-xs font-medium text-accent-foreground">
           <Sparkles className="h-3.5 w-3.5 text-primary" />
-          AI-powered cybersecurity platform
+          {content.badge}
         </span>
         <h1 className="mt-6 text-3xl font-extrabold leading-tight tracking-tight sm:text-6xl headline-float">
-          <span className="animate-word" style={{ animationDelay: "0.05s" }}>Stop</span>{" "}
-          <span className="animate-word" style={{ animationDelay: "0.22s" }}>
-            <span className="shimmer-word text-cyber-animated">phishing</span>
-          </span>{" "}
-          <span className="animate-word" style={{ animationDelay: "0.42s" }}>before</span>{" "}
-          <span className="animate-word" style={{ animationDelay: "0.56s" }}>it</span>{" "}
-          <span className="animate-word" style={{ animationDelay: "0.7s" }}>hooks</span>{" "}
-          <span className="animate-word" style={{ animationDelay: "0.84s" }}>you.</span>
+          {words.map((word, i) => {
+            const highlight = /phish/i.test(word);
+            return (
+              <span key={`${word}-${i}`}>
+                <span className="animate-word" style={{ animationDelay: `${0.05 + i * 0.16}s` }}>
+                  {highlight ? <span className="shimmer-word text-cyber-animated">{word}</span> : word}
+                </span>{" "}
+              </span>
+            );
+          })}
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg">
-          Paste any link to get an instant AI risk verdict, sharpen your skills with a cybersecurity AI tutor, and keep your passwords safe — all in one secure, lightweight app.
+          {content.subheadline}
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Button asChild size="lg" className="glow">
             <Link to="/analyzer">
-              Analyze a link <ArrowRight className="ml-2 h-4 w-4" />
+              {content.ctaLabel} <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
           <InstallButton size="lg" variant="outline" />
@@ -121,12 +135,12 @@ function Landing() {
           </div>
           <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
             <div className="inline-flex rounded-2xl bg-gradient-to-br from-primary/20 to-chart-5/20 p-4">
-              <img src={logo} alt="PhishGuard" width={64} height={64} className="h-16 w-16 sm:h-20 sm:w-20" />
+              <img src={content.heroImageUrl || logo} alt="PhishGuard" className="h-16 w-16 rounded-xl object-cover sm:h-20 sm:w-20" />
             </div>
             <div className="space-y-1">
-              <p className="text-lg font-semibold sm:text-xl">Your all-in-one cyber shield</p>
+              <p className="text-lg font-semibold sm:text-xl">{content.heroCardTitle}</p>
               <p className="max-w-xs text-sm text-muted-foreground sm:max-w-sm">
-                Analyze suspicious links, learn security skills, and lock your passwords away safely.
+                {content.heroCardText}
               </p>
             </div>
           </div>
@@ -157,9 +171,9 @@ function Landing() {
                 <Lock className="h-4 w-4" />
                 New: Password Vault
               </div>
-              <h2 className="text-2xl font-bold sm:text-3xl">Never forget a password again.</h2>
+              <h2 className="text-2xl font-bold sm:text-3xl">{content.vaultTitle}</h2>
               <p className="mt-3 text-base text-muted-foreground sm:text-lg">
-                Generate strong, unique passwords and store them securely in your personal vault. One master sign-in, total peace of mind.
+                {content.vaultText}
               </p>
               <ul className="mt-4 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
                 <li className="flex items-center gap-2">
