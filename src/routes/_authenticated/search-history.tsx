@@ -130,8 +130,9 @@ function SearchHistoryPage() {
                     <p className="truncate text-sm font-medium" title={r.searchQuery}>{r.searchQuery}</p>
                     <p className="text-xs text-muted-foreground">{new Date(r.searchedAt).toLocaleString()}</p>
                   </div>
-                  <div className="flex shrink-0 items-center gap-2">
+                  <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
                     {r.searchCategory && <Badge variant="secondary">{r.searchCategory}</Badge>}
+                    <SecurityReportDialog url={r.searchQuery} label="Report" />
                     <Button
                       size="icon"
                       variant="ghost"
