@@ -179,6 +179,60 @@ export type Database = {
         }
         Relationships: []
       }
+      security_reports: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          risk_rating: string | null
+          summary: string | null
+          title: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          risk_rating?: string | null
+          summary?: string | null
+          title?: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          risk_rating?: string | null
+          summary?: string | null
+          title?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      site_content: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
