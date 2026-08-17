@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getMySearchHistory, addSearchHistory, deleteSearchHistory } from "@/lib/rbac.functions";
+import { SecurityReportDialog } from "@/components/security-report-dialog";
 
 export const Route = createFileRoute("/_authenticated/search-history")({
   head: () => ({ meta: [{ title: "Search History — PhishGuard Lite" }] }),
