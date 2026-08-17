@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AccessDenied } from "@/components/access-denied";
+import { CmsPanel } from "@/components/cms-panel";
 import { useRole } from "@/hooks/use-role";
 import {
   getAdminDashboard,
