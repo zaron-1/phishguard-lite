@@ -120,22 +120,24 @@ function Analyzer() {
           <CardContent>
             <div className="flex flex-wrap gap-2">
               {recent.map((r) => (
-                <Button
-                  key={r.id}
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="max-w-full"
-                  disabled={mutation.isPending}
-                  onClick={() => {
-                    setUrl(r.searchQuery);
-                    mutation.mutate(r.searchQuery);
-                  }}
-                  title={`Re-analyze ${r.searchQuery}`}
-                >
-                  <RotateCcw className="h-3.5 w-3.5 shrink-0" />
-                  <span className="truncate">{r.searchQuery}</span>
-                </Button>
+                <div key={r.id} className="flex max-w-full items-center gap-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="max-w-full"
+                    disabled={mutation.isPending}
+                    onClick={() => {
+                      setUrl(r.searchQuery);
+                      mutation.mutate(r.searchQuery);
+                    }}
+                    title={`Re-analyze ${r.searchQuery}`}
+                  >
+                    <RotateCcw className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{r.searchQuery}</span>
+                  </Button>
+                  <SecurityReportDialog url={r.searchQuery} label="Report" variant="secondary" />
+                </div>
               ))}
             </div>
           </CardContent>
