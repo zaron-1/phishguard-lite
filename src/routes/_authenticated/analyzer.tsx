@@ -185,6 +185,12 @@ function Analyzer() {
                 })}
               </ul>
             )}
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-dashed p-3">
+              <p className="text-xs text-muted-foreground">
+                Need depth? Generate a full OWASP-style vulnerability assessment for this site and download it as PDF.
+              </p>
+              <SecurityReportDialog url={result.url} size="default" variant="default" label="Generate security report" />
+            </div>
           </CardContent>
         </Card>
       )}
