@@ -42,17 +42,19 @@ function AdminPage() {
       </div>
 
       <Tabs defaultValue="overview">
-        <TabsList>
+        <TabsList className="flex-wrap">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="searches">Searches</TabsTrigger>
           <TabsTrigger value="activity">Activity</TabsTrigger>
+          <TabsTrigger value="cms">Content CMS</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-4"><Overview /></TabsContent>
         <TabsContent value="users" className="mt-4"><UsersPanel /></TabsContent>
         <TabsContent value="searches" className="mt-4"><SearchesPanel /></TabsContent>
         <TabsContent value="activity" className="mt-4"><ActivityPanel /></TabsContent>
+        <TabsContent value="cms" className="mt-4"><CmsPanel /></TabsContent>
       </Tabs>
     </div>
   );
