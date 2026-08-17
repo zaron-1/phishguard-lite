@@ -19,6 +19,7 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { analyzeUrl, type AnalysisResult } from "@/lib/phishing.functions";
 import { getMySearchHistory, addSearchHistory } from "@/lib/rbac.functions";
+import { SecurityReportDialog } from "@/components/security-report-dialog";
 
 export const Route = createFileRoute("/_authenticated/analyzer")({
   head: () => ({ meta: [{ title: "Phishing Analyzer — PhishGuard Lite" }] }),
