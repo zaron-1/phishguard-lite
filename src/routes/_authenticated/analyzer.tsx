@@ -19,6 +19,7 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { analyzeUrl, type AnalysisResult } from "@/lib/phishing.functions";
 import { getMySearchHistory, addSearchHistory } from "@/lib/rbac.functions";
+import { SecurityReportDialog } from "@/components/security-report-dialog";
 
 export const Route = createFileRoute("/_authenticated/analyzer")({
   head: () => ({ meta: [{ title: "Phishing Analyzer — PhishGuard Lite" }] }),
@@ -119,22 +120,24 @@ function Analyzer() {
           <CardContent>
             <div className="flex flex-wrap gap-2">
               {recent.map((r) => (
-                <Button
-                  key={r.id}
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="max-w-full"
-                  disabled={mutation.isPending}
-                  onClick={() => {
-                    setUrl(r.searchQuery);
-                    mutation.mutate(r.searchQuery);
-                  }}
-                  title={`Re-analyze ${r.searchQuery}`}
-                >
-                  <RotateCcw className="h-3.5 w-3.5 shrink-0" />
-                  <span className="truncate">{r.searchQuery}</span>
-                </Button>
+                <div key={r.id} className="flex max-w-full items-center gap-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="max-w-full"
+                    disabled={mutation.isPending}
+                    onClick={() => {
+                      setUrl(r.searchQuery);
+                      mutation.mutate(r.searchQuery);
+                    }}
+                    title={`Re-analyze ${r.searchQuery}`}
+                  >
+                    <RotateCcw className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{r.searchQuery}</span>
+                  </Button>
+                  <SecurityReportDialog url={r.searchQuery} label="Report" variant="secondary" />
+                </div>
               ))}
             </div>
           </CardContent>
@@ -182,6 +185,12 @@ function Analyzer() {
                 })}
               </ul>
             )}
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-dashed p-3">
+              <p className="text-xs text-muted-foreground">
+                Need depth? Generate a full OWASP-style vulnerability assessment for this site and download it as PDF.
+              </p>
+              <SecurityReportDialog url={result.url} size="default" variant="default" label="Generate security report" />
+            </div>
           </CardContent>
         </Card>
       )}
