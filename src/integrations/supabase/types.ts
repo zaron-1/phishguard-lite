@@ -14,6 +14,198 @@ export type Database = {
   }
   public: {
     Tables: {
+      academy_bookmarks: {
+        Row: {
+          course_slug: string
+          created_at: string
+          id: string
+          lesson_id: string
+          lesson_title: string
+          note: string | null
+          user_id: string
+        }
+        Insert: {
+          course_slug: string
+          created_at?: string
+          id?: string
+          lesson_id: string
+          lesson_title?: string
+          note?: string | null
+          user_id: string
+        }
+        Update: {
+          course_slug?: string
+          created_at?: string
+          id?: string
+          lesson_id?: string
+          lesson_title?: string
+          note?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      academy_lessons: {
+        Row: {
+          content: string
+          course_slug: string
+          created_at: string
+          glossary: Json
+          key_takeaways: Json
+          knowledge_check: Json
+          lesson_id: string
+          narration: string | null
+          objectives: Json
+          path_slug: string
+          title: string
+          tools: Json
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          course_slug: string
+          created_at?: string
+          glossary?: Json
+          key_takeaways?: Json
+          knowledge_check?: Json
+          lesson_id: string
+          narration?: string | null
+          objectives?: Json
+          path_slug: string
+          title: string
+          tools?: Json
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          course_slug?: string
+          created_at?: string
+          glossary?: Json
+          key_takeaways?: Json
+          knowledge_check?: Json
+          lesson_id?: string
+          narration?: string | null
+          objectives?: Json
+          path_slug?: string
+          title?: string
+          tools?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      academy_profiles: {
+        Row: {
+          career_interest: string | null
+          created_at: string
+          experience_level: string
+          learning_goal: string | null
+          onboarded_at: string | null
+          recommended_path: string | null
+          updated_at: string
+          user_id: string
+          weekly_hours: number
+        }
+        Insert: {
+          career_interest?: string | null
+          created_at?: string
+          experience_level?: string
+          learning_goal?: string | null
+          onboarded_at?: string | null
+          recommended_path?: string | null
+          updated_at?: string
+          user_id: string
+          weekly_hours?: number
+        }
+        Update: {
+          career_interest?: string | null
+          created_at?: string
+          experience_level?: string
+          learning_goal?: string | null
+          onboarded_at?: string | null
+          recommended_path?: string | null
+          updated_at?: string
+          user_id?: string
+          weekly_hours?: number
+        }
+        Relationships: []
+      }
+      academy_progress: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          course_slug: string
+          created_at: string
+          id: string
+          lesson_id: string
+          lesson_title: string
+          listened_seconds: number
+          path_slug: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          course_slug: string
+          created_at?: string
+          id?: string
+          lesson_id: string
+          lesson_title?: string
+          listened_seconds?: number
+          path_slug: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          course_slug?: string
+          created_at?: string
+          id?: string
+          lesson_id?: string
+          lesson_title?: string
+          listened_seconds?: number
+          path_slug?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      academy_quiz_results: {
+        Row: {
+          course_slug: string
+          created_at: string
+          id: string
+          kind: string
+          lesson_id: string
+          score: number
+          total: number
+          user_id: string
+          weak_topics: Json
+        }
+        Insert: {
+          course_slug: string
+          created_at?: string
+          id?: string
+          kind?: string
+          lesson_id: string
+          score?: number
+          total?: number
+          user_id: string
+          weak_topics?: Json
+        }
+        Update: {
+          course_slug?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          lesson_id?: string
+          score?: number
+          total?: number
+          user_id?: string
+          weak_topics?: Json
+        }
+        Relationships: []
+      }
       admin_actions: {
         Row: {
           action: string
