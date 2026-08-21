@@ -23,6 +23,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAnalyzerRouteImport } from './routes/_authenticated/analyzer'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAcademyIndexRouteImport } from './routes/_authenticated/academy.index'
+import { Route as AuthenticatedAcademyCourseCourseSlugRouteImport } from './routes/_authenticated/academy.course.$courseSlug'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -95,6 +96,12 @@ const AuthenticatedAcademyIndexRoute =
     path: '/academy/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAcademyCourseCourseSlugRoute =
+  AuthenticatedAcademyCourseCourseSlugRouteImport.update({
+    id: '/academy/course/$courseSlug',
+    path: '/academy/course/$courseSlug',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/academy/': typeof AuthenticatedAcademyIndexRoute
+  '/academy/course/$courseSlug': typeof AuthenticatedAcademyCourseCourseSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -125,6 +133,7 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/academy': typeof AuthenticatedAcademyIndexRoute
+  '/academy/course/$courseSlug': typeof AuthenticatedAcademyCourseCourseSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -142,6 +151,7 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/_authenticated/academy/': typeof AuthenticatedAcademyIndexRoute
+  '/_authenticated/academy/course/$courseSlug': typeof AuthenticatedAcademyCourseCourseSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -159,6 +169,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/auth/callback'
     | '/academy/'
+    | '/academy/course/$courseSlug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -174,6 +185,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/auth/callback'
     | '/academy'
+    | '/academy/course/$courseSlug'
   id:
     | '__root__'
     | '/'
@@ -190,6 +202,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/auth/callback'
     | '/_authenticated/academy/'
+    | '/_authenticated/academy/course/$courseSlug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -299,6 +312,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAcademyIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/academy/course/$courseSlug': {
+      id: '/_authenticated/academy/course/$courseSlug'
+      path: '/academy/course/$courseSlug'
+      fullPath: '/academy/course/$courseSlug'
+      preLoaderRoute: typeof AuthenticatedAcademyCourseCourseSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -312,6 +332,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTutorRoute: typeof AuthenticatedTutorRoute
   AuthenticatedVaultRoute: typeof AuthenticatedVaultRoute
   AuthenticatedAcademyIndexRoute: typeof AuthenticatedAcademyIndexRoute
+  AuthenticatedAcademyCourseCourseSlugRoute: typeof AuthenticatedAcademyCourseCourseSlugRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -324,6 +345,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTutorRoute: AuthenticatedTutorRoute,
   AuthenticatedVaultRoute: AuthenticatedVaultRoute,
   AuthenticatedAcademyIndexRoute: AuthenticatedAcademyIndexRoute,
+  AuthenticatedAcademyCourseCourseSlugRoute:
+    AuthenticatedAcademyCourseCourseSlugRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
