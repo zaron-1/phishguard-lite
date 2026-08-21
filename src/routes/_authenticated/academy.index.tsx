@@ -29,7 +29,7 @@ import {
 } from "@/lib/academy/catalog";
 import { getAcademyOverview, saveAcademyProfile } from "@/lib/academy.functions";
 
-export const Route = createFileRoute("/_authenticated/academy")({
+export const Route = createFileRoute("/_authenticated/academy/")({
   head: () => ({
     meta: [
       { title: "Cyber Academy — Learn Cybersecurity from Zero | PhishGuard" },
