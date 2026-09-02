@@ -14,7 +14,8 @@ export const Route = createFileRoute("/_authenticated/academy/course/$courseSlug
     const course = getCourse(params.courseSlug)?.course;
     const title = course ? `${course.title} — Cyber Academy` : "Course — Cyber Academy";
     const description =
-      course?.description ?? "A structured cybersecurity course inside the PhishGuard Cyber Academy.";
+      course?.description ??
+      "A structured cybersecurity course inside the PhishGuard Cyber Academy.";
     return {
       meta: [
         { title },
@@ -41,9 +42,13 @@ function CoursePage() {
 
   const fetchOverview = useServerFn(getAcademyOverview);
   const { data } = useQuery({ queryKey: ["academy", "overview"], queryFn: () => fetchOverview() });
-  const completed = new Set((data?.progress ?? []).filter((p) => p.completed).map((p) => p.lessonId));
+  const completed = new Set(
+    (data?.progress ?? []).filter((p) => p.completed).map((p) => p.lessonId),
+  );
 
-  const allIds = course.modules.flatMap((m, mi) => m.lessons.map((_, li) => makeLessonId(course.slug, mi, li)));
+  const allIds = course.modules.flatMap((m, mi) =>
+    m.lessons.map((_, li) => makeLessonId(course.slug, mi, li)),
+  );
   const doneCount = allIds.filter((id) => completed.has(id)).length;
   const pct = Math.round((doneCount / allIds.length) * 100);
 
@@ -135,7 +140,9 @@ function CoursePage() {
                         <Circle className="h-4 w-4 shrink-0 text-muted-foreground" />
                       )}
                       <span className="min-w-0 flex-1">{title}</span>
-                      <span className="shrink-0 text-xs text-muted-foreground">Lesson {li + 1}</span>
+                      <span className="shrink-0 text-xs text-muted-foreground">
+                        Lesson {li + 1}
+                      </span>
                     </Link>
                   </li>
                 );

@@ -22,7 +22,6 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { InstallButton } from "@/components/install-button";
 import { useRole } from "@/hooks/use-role";
 
-
 const USER_NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/profile", label: "My Profile", icon: User },
@@ -56,7 +55,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   }
-
 
   const nav = [
     ...USER_NAV,
@@ -105,7 +103,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <img src={logo} alt="PhishGuard" width={28} height={28} className="h-7 w-7 shrink-0" />
             <span className="text-base font-bold text-cyber-gradient">PhishGuard</span>
           </Link>
-          <span className="hidden text-sm text-muted-foreground md:block">Smart cybersecurity, simplified.</span>
+          <span className="hidden text-sm text-muted-foreground md:block">
+            Smart cybersecurity, simplified.
+          </span>
           <div className="flex items-center gap-1.5">
             <Button
               variant="ghost"
@@ -120,7 +120,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <InstallButton variant="outline" size="sm" />
 
             <ThemeToggle />
-            <Button variant="ghost" size="icon" className="md:hidden" onClick={handleSignOut} aria-label="Sign out">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={handleSignOut}
+              aria-label="Sign out"
+            >
               <LogOut className="h-5 w-5" />
             </Button>
           </div>

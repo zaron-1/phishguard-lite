@@ -99,7 +99,10 @@ export const getAcademyOverview = createServerFn({ method: "GET" })
 
     const quizzes = quizRes.data ?? [];
     const totals = quizzes.reduce(
-      (acc: { s: number; t: number }, q: any) => ({ s: acc.s + (q.score ?? 0), t: acc.t + (q.total ?? 0) }),
+      (acc: { s: number; t: number }, q: any) => ({
+        s: acc.s + (q.score ?? 0),
+        t: acc.t + (q.total ?? 0),
+      }),
       { s: 0, t: 0 },
     );
 

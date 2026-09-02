@@ -38,7 +38,12 @@ function extractJson(text: string): any {
 }
 
 function asStringArray(v: unknown, max = 12): string[] {
-  return Array.isArray(v) ? v.map((x) => String(x)).filter(Boolean).slice(0, max) : [];
+  return Array.isArray(v)
+    ? v
+        .map((x) => String(x))
+        .filter(Boolean)
+        .slice(0, max)
+    : [];
 }
 
 export function requireApiKey() {
@@ -108,7 +113,8 @@ Write this lesson now.`;
           const options = asStringArray(q?.options, 4);
           if (options.length !== 4) return null;
           let correctIndex = Math.round(Number(q?.correctIndex));
-          if (!Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex > 3) correctIndex = 0;
+          if (!Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex > 3)
+            correctIndex = 0;
           return {
             question: String(q?.question ?? ""),
             options,
@@ -165,7 +171,8 @@ export async function synthesizeNarration(script: string): Promise<string> {
       voice: "alloy",
       input,
       response_format: "mp3",
-      instructions: "Speak like a warm, clear cybersecurity instructor. Steady pace, friendly tone.",
+      instructions:
+        "Speak like a warm, clear cybersecurity instructor. Steady pace, friendly tone.",
     }),
   });
 
@@ -173,7 +180,8 @@ export async function synthesizeNarration(script: string): Promise<string> {
     const body = await res.text().catch(() => "");
     console.error("[academy] TTS failed", res.status, body.slice(0, 300));
     if (res.status === 429) throw new Error("Narration is busy right now. Try again in a moment.");
-    if (res.status === 402) throw new Error("AI credits are exhausted. Add credits to keep narrating lessons.");
+    if (res.status === 402)
+      throw new Error("AI credits are exhausted. Add credits to keep narrating lessons.");
     throw new Error("Narration is unavailable right now.");
   }
 

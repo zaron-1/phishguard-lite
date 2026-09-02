@@ -23,11 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import {
-  getLessonRef,
-  getCourse,
-  neighbours,
-} from "@/lib/academy/catalog";
+import { getLessonRef, getCourse, neighbours } from "@/lib/academy/catalog";
 import {
   getAcademyLesson,
   getAcademyOverview,
@@ -58,7 +54,9 @@ export const Route = createFileRoute("/_authenticated/academy/lesson/$lessonId")
   component: LessonPage,
   notFoundComponent: () => <p className="text-sm text-muted-foreground">Lesson not found.</p>,
   errorComponent: () => (
-    <p className="text-sm text-muted-foreground">This lesson could not be loaded. Please try again.</p>
+    <p className="text-sm text-muted-foreground">
+      This lesson could not be loaded. Please try again.
+    </p>
   ),
 });
 
@@ -192,7 +190,11 @@ function LessonPage() {
             onClick={() => bookmarkMutation.mutate()}
             disabled={bookmarkMutation.isPending}
           >
-            {bookmarked ? <BookmarkCheck className="h-5 w-5 text-primary" /> : <Bookmark className="h-5 w-5" />}
+            {bookmarked ? (
+              <BookmarkCheck className="h-5 w-5 text-primary" />
+            ) : (
+              <Bookmark className="h-5 w-5" />
+            )}
           </Button>
           <Button
             variant="outline"
@@ -295,7 +297,9 @@ function LessonPage() {
             return (
               <Card key={`${question.question}-${index}`}>
                 <CardHeader>
-                  <CardTitle className="text-base">{index + 1}. {question.question}</CardTitle>
+                  <CardTitle className="text-base">
+                    {index + 1}. {question.question}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {question.options.map((option, optionIndex) => {
@@ -306,9 +310,20 @@ function LessonPage() {
                       <Button
                         key={option}
                         type="button"
-                        variant={isCorrect ? "default" : isWrong ? "destructive" : isAnswer ? "secondary" : "outline"}
+                        variant={
+                          isCorrect
+                            ? "default"
+                            : isWrong
+                              ? "destructive"
+                              : isAnswer
+                                ? "secondary"
+                                : "outline"
+                        }
                         className="h-auto min-h-10 w-full justify-start whitespace-normal py-2 text-left"
-                        onClick={() => !submitted && setSelected((previous) => ({ ...previous, [index]: optionIndex }))}
+                        onClick={() =>
+                          !submitted &&
+                          setSelected((previous) => ({ ...previous, [index]: optionIndex }))
+                        }
                         disabled={submitted}
                       >
                         <span className="mr-2 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-xs">
@@ -319,8 +334,11 @@ function LessonPage() {
                     );
                   })}
                   {submitted && (
-                    <p className={`pt-2 text-sm ${correct ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"}`}>
-                      {correct ? "Correct. " : "Not quite. "}{question.explanation}
+                    <p
+                      className={`pt-2 text-sm ${correct ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"}`}
+                    >
+                      {correct ? "Correct. " : "Not quite. "}
+                      {question.explanation}
                     </p>
                   )}
                 </CardContent>
@@ -334,9 +352,18 @@ function LessonPage() {
           ) : (
             <div className="flex flex-wrap items-center gap-3">
               <div className="rounded-lg border bg-card px-4 py-2 text-sm">
-                Score: <strong>{quizResult.score}/{quizResult.total}</strong>
+                Score:{" "}
+                <strong>
+                  {quizResult.score}/{quizResult.total}
+                </strong>
               </div>
-              <Button variant="outline" onClick={() => { setSelected({}); setSubmitted(false); }}>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSelected({});
+                  setSubmitted(false);
+                }}
+              >
                 <RotateCcw className="mr-2 h-4 w-4" /> Try again
               </Button>
             </div>
@@ -345,17 +372,15 @@ function LessonPage() {
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-y py-5">
-        <Button
-          variant="outline"
-          disabled={!prev}
-          asChild={!!prev}
-        >
+        <Button variant="outline" disabled={!prev} asChild={!!prev}>
           {prev ? (
             <Link to="/academy/lesson/$lessonId" params={{ lessonId: prev.id }}>
               <ChevronLeft className="mr-1.5 h-4 w-4" /> Previous
             </Link>
           ) : (
-            <span><ChevronLeft className="mr-1.5 h-4 w-4" /> Previous</span>
+            <span>
+              <ChevronLeft className="mr-1.5 h-4 w-4" /> Previous
+            </span>
           )}
         </Button>
         <Button
@@ -363,7 +388,11 @@ function LessonPage() {
           onClick={() => progressMutation.mutate(!completed)}
           disabled={progressMutation.isPending}
         >
-          {progressMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
+          {progressMutation.isPending ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <CheckCircle2 className="mr-2 h-4 w-4" />
+          )}
           {completed ? "Completed" : "Mark complete"}
         </Button>
         <Button variant="outline" disabled={!next} asChild={!!next}>
@@ -372,13 +401,16 @@ function LessonPage() {
               Next <ChevronRight className="ml-1.5 h-4 w-4" />
             </Link>
           ) : (
-            <span>Next <ChevronRight className="ml-1.5 h-4 w-4" /></span>
+            <span>
+              Next <ChevronRight className="ml-1.5 h-4 w-4" />
+            </span>
           )}
         </Button>
       </div>
 
       <p className="text-center text-xs text-muted-foreground">
-        AI-generated learning content is educational. Practise only in systems you own or are authorised to test.
+        AI-generated learning content is educational. Practise only in systems you own or are
+        authorised to test.
       </p>
     </div>
   );
