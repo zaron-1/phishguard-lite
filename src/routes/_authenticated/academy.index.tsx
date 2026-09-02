@@ -2,15 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import {
-  BookOpen,
-  Compass,
-  GraduationCap,
-  Loader2,
-  Sparkles,
-  Target,
-  Trophy,
-} from "lucide-react";
+import { BookOpen, Compass, GraduationCap, Loader2, Sparkles, Target, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -54,7 +46,11 @@ const LEVELS = [
   { value: "beginner", label: "Complete beginner", hint: "New to computers and security" },
   { value: "some-it", label: "Some IT background", hint: "I use tech daily, new to security" },
   { value: "switching", label: "Career switcher", hint: "Moving into cybersecurity" },
-  { value: "professional", label: "Working in tech/security", hint: "Levelling up specific skills" },
+  {
+    value: "professional",
+    label: "Working in tech/security",
+    hint: "Levelling up specific skills",
+  },
 ] as const;
 
 function AcademyHome() {
@@ -89,7 +85,9 @@ function AcademyHome() {
   });
 
   const profile = data?.profile ?? null;
-  const completed = new Set((data?.progress ?? []).filter((p) => p.completed).map((p) => p.lessonId));
+  const completed = new Set(
+    (data?.progress ?? []).filter((p) => p.completed).map((p) => p.lessonId),
+  );
   const recommended = profile?.recommendedPath ? getPath(profile.recommendedPath) : undefined;
   const showOnboarding = !isLoading && (!profile?.onboarded || editing);
 
@@ -103,8 +101,9 @@ function AcademyHome() {
           <h1 className="text-2xl font-bold md:text-3xl">Cyber Academy</h1>
         </div>
         <p className="text-sm text-muted-foreground">
-          {TOTAL_LESSONS} lessons across {TOTAL_COURSES} courses — from “what is a computer” to cloud
-          detection engineering. Every lesson is written for you, read aloud, and checked with a quiz.
+          {TOTAL_LESSONS} lessons across {TOTAL_COURSES} courses — from “what is a computer” to
+          cloud detection engineering. Every lesson is written for you, read aloud, and checked with
+          a quiz.
         </p>
       </header>
 
@@ -129,19 +128,18 @@ function AcademyHome() {
                   <Label>Where are you starting from?</Label>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {LEVELS.map((l) => (
-                      <button
+                      <Button
                         key={l.value}
                         type="button"
+                        variant="outline"
                         onClick={() => setLevel(l.value)}
-                        className={`rounded-lg border p-3 text-left transition-colors ${
-                          level === l.value
-                            ? "border-primary bg-primary/10"
-                            : "hover:bg-muted/60"
+                        className={`h-auto w-full justify-start rounded-lg p-3 text-left transition-colors ${
+                          level === l.value ? "border-primary bg-primary/10" : "hover:bg-muted/60"
                         }`}
                       >
                         <div className="text-sm font-medium">{l.label}</div>
                         <div className="text-xs text-muted-foreground">{l.hint}</div>
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>
@@ -164,7 +162,9 @@ function AcademyHome() {
                       min={1}
                       max={40}
                       value={hours}
-                      onChange={(e) => setHours(Math.max(1, Math.min(40, Number(e.target.value) || 1)))}
+                      onChange={(e) =>
+                        setHours(Math.max(1, Math.min(40, Number(e.target.value) || 1)))
+                      }
                     />
                   </div>
                 </div>
@@ -216,7 +216,9 @@ function AcademyHome() {
                 </CardHeader>
                 <CardContent>
                   <Progress value={overallPct} className="h-2" />
-                  <p className="mt-2 text-xs text-muted-foreground">{overallPct}% of the full academy</p>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    {overallPct}% of the full academy
+                  </p>
                 </CardContent>
               </Card>
               <Card>
@@ -252,7 +254,9 @@ function AcademyHome() {
             <Card className="border-primary/30 bg-primary/5">
               <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
                 <div className="min-w-0">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Continue learning</p>
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    Continue learning
+                  </p>
                   <p className="truncate text-sm font-medium">
                     {data.progress[0]?.lessonTitle || "Your last lesson"}
                   </p>
