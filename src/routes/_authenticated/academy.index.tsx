@@ -129,11 +129,12 @@ function AcademyHome() {
                   <Label>Where are you starting from?</Label>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {LEVELS.map((l) => (
-                      <button
+                      <Button
                         key={l.value}
                         type="button"
+                        variant="outline"
                         onClick={() => setLevel(l.value)}
-                        className={`rounded-lg border p-3 text-left transition-colors ${
+                        className={`h-auto w-full justify-start rounded-lg p-3 text-left transition-colors ${
                           level === l.value
                             ? "border-primary bg-primary/10"
                             : "hover:bg-muted/60"
@@ -141,7 +142,7 @@ function AcademyHome() {
                       >
                         <div className="text-sm font-medium">{l.label}</div>
                         <div className="text-xs text-muted-foreground">{l.hint}</div>
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>
