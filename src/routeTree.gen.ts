@@ -23,6 +23,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAnalyzerRouteImport } from './routes/_authenticated/analyzer'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAcademyIndexRouteImport } from './routes/_authenticated/academy.index'
+import { Route as AuthenticatedAcademyLessonLessonIdRouteImport } from './routes/_authenticated/academy.lesson.$lessonId'
 import { Route as AuthenticatedAcademyCourseCourseSlugRouteImport } from './routes/_authenticated/academy.course.$courseSlug'
 
 const AuthRoute = AuthRouteImport.update({
@@ -96,6 +97,12 @@ const AuthenticatedAcademyIndexRoute =
     path: '/academy/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAcademyLessonLessonIdRoute =
+  AuthenticatedAcademyLessonLessonIdRouteImport.update({
+    id: '/academy/lesson/$lessonId',
+    path: '/academy/lesson/$lessonId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAcademyCourseCourseSlugRoute =
   AuthenticatedAcademyCourseCourseSlugRouteImport.update({
     id: '/academy/course/$courseSlug',
@@ -118,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/auth/callback': typeof AuthCallbackRoute
   '/academy/': typeof AuthenticatedAcademyIndexRoute
   '/academy/course/$courseSlug': typeof AuthenticatedAcademyCourseCourseSlugRoute
+  '/academy/lesson/$lessonId': typeof AuthenticatedAcademyLessonLessonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -134,6 +142,7 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/academy': typeof AuthenticatedAcademyIndexRoute
   '/academy/course/$courseSlug': typeof AuthenticatedAcademyCourseCourseSlugRoute
+  '/academy/lesson/$lessonId': typeof AuthenticatedAcademyLessonLessonIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -152,6 +161,7 @@ export interface FileRoutesById {
   '/auth/callback': typeof AuthCallbackRoute
   '/_authenticated/academy/': typeof AuthenticatedAcademyIndexRoute
   '/_authenticated/academy/course/$courseSlug': typeof AuthenticatedAcademyCourseCourseSlugRoute
+  '/_authenticated/academy/lesson/$lessonId': typeof AuthenticatedAcademyLessonLessonIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -170,6 +180,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/academy/'
     | '/academy/course/$courseSlug'
+    | '/academy/lesson/$lessonId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -186,6 +197,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/academy'
     | '/academy/course/$courseSlug'
+    | '/academy/lesson/$lessonId'
   id:
     | '__root__'
     | '/'
@@ -203,6 +215,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/_authenticated/academy/'
     | '/_authenticated/academy/course/$courseSlug'
+    | '/_authenticated/academy/lesson/$lessonId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -312,6 +325,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAcademyIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/academy/lesson/$lessonId': {
+      id: '/_authenticated/academy/lesson/$lessonId'
+      path: '/academy/lesson/$lessonId'
+      fullPath: '/academy/lesson/$lessonId'
+      preLoaderRoute: typeof AuthenticatedAcademyLessonLessonIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/academy/course/$courseSlug': {
       id: '/_authenticated/academy/course/$courseSlug'
       path: '/academy/course/$courseSlug'
@@ -333,6 +353,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVaultRoute: typeof AuthenticatedVaultRoute
   AuthenticatedAcademyIndexRoute: typeof AuthenticatedAcademyIndexRoute
   AuthenticatedAcademyCourseCourseSlugRoute: typeof AuthenticatedAcademyCourseCourseSlugRoute
+  AuthenticatedAcademyLessonLessonIdRoute: typeof AuthenticatedAcademyLessonLessonIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -347,6 +368,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAcademyIndexRoute: AuthenticatedAcademyIndexRoute,
   AuthenticatedAcademyCourseCourseSlugRoute:
     AuthenticatedAcademyCourseCourseSlugRoute,
+  AuthenticatedAcademyLessonLessonIdRoute:
+    AuthenticatedAcademyLessonLessonIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

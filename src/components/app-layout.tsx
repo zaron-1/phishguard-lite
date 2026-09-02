@@ -12,6 +12,7 @@ import {
   Shield,
   KeyRound,
   RefreshCw,
+  School,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import logo from "@/assets/logo.png";
@@ -29,6 +30,7 @@ const USER_NAV = [
   { to: "/analyzer", label: "Phishing Analyzer", icon: ShieldCheck },
   { to: "/vault", label: "Password Vault", icon: KeyRound },
   { to: "/tutor", label: "AI Tutor", icon: GraduationCap },
+  { to: "/academy", label: "Cyber Academy", icon: School },
   { to: "/quiz", label: "Quiz", icon: Brain },
 ] as const;
 
