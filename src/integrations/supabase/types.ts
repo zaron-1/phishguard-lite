@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      academy_assessment_attempts: {
+        Row: {
+          answers: Json
+          course_slug: string
+          created_at: string
+          id: string
+          module_index: number
+          passed: boolean
+          path_slug: string
+          question_ids: Json
+          score: number
+          total: number
+          user_id: string
+        }
+        Insert: {
+          answers?: Json
+          course_slug: string
+          created_at?: string
+          id?: string
+          module_index: number
+          passed?: boolean
+          path_slug: string
+          question_ids?: Json
+          score?: number
+          total?: number
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          course_slug?: string
+          created_at?: string
+          id?: string
+          module_index?: number
+          passed?: boolean
+          path_slug?: string
+          question_ids?: Json
+          score?: number
+          total?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       academy_bookmarks: {
         Row: {
           course_slug: string
@@ -54,6 +96,7 @@ export type Database = {
           knowledge_check: Json
           lesson_id: string
           narration: string | null
+          narration_audio_base64: string | null
           objectives: Json
           path_slug: string
           title: string
@@ -69,6 +112,7 @@ export type Database = {
           knowledge_check?: Json
           lesson_id: string
           narration?: string | null
+          narration_audio_base64?: string | null
           objectives?: Json
           path_slug: string
           title: string
@@ -84,6 +128,7 @@ export type Database = {
           knowledge_check?: Json
           lesson_id?: string
           narration?: string | null
+          narration_audio_base64?: string | null
           objectives?: Json
           path_slug?: string
           title?: string
@@ -92,35 +137,125 @@ export type Database = {
         }
         Relationships: []
       }
+      academy_module_assessments: {
+        Row: {
+          course_slug: string
+          created_at: string
+          id: string
+          module_index: number
+          module_title: string
+          pass_percent: number
+          path_slug: string
+          question_count: number
+          questions: Json
+          updated_at: string
+        }
+        Insert: {
+          course_slug: string
+          created_at?: string
+          id?: string
+          module_index: number
+          module_title: string
+          pass_percent?: number
+          path_slug: string
+          question_count?: number
+          questions?: Json
+          updated_at?: string
+        }
+        Update: {
+          course_slug?: string
+          created_at?: string
+          id?: string
+          module_index?: number
+          module_title?: string
+          pass_percent?: number
+          path_slug?: string
+          question_count?: number
+          questions?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      academy_module_progress: {
+        Row: {
+          assessment_passed: boolean
+          assessment_score: number | null
+          course_slug: string
+          created_at: string
+          id: string
+          last_lesson_id: string | null
+          lesson_count: number
+          lessons_completed: number
+          module_index: number
+          path_slug: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assessment_passed?: boolean
+          assessment_score?: number | null
+          course_slug: string
+          created_at?: string
+          id?: string
+          last_lesson_id?: string | null
+          lesson_count?: number
+          lessons_completed?: number
+          module_index: number
+          path_slug: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assessment_passed?: boolean
+          assessment_score?: number | null
+          course_slug?: string
+          created_at?: string
+          id?: string
+          last_lesson_id?: string | null
+          lesson_count?: number
+          lessons_completed?: number
+          module_index?: number
+          path_slug?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       academy_profiles: {
         Row: {
+          active_path_slug: string | null
           career_interest: string | null
           created_at: string
           experience_level: string
           learning_goal: string | null
           onboarded_at: string | null
+          path_completed: boolean
           recommended_path: string | null
           updated_at: string
           user_id: string
           weekly_hours: number
         }
         Insert: {
+          active_path_slug?: string | null
           career_interest?: string | null
           created_at?: string
           experience_level?: string
           learning_goal?: string | null
           onboarded_at?: string | null
+          path_completed?: boolean
           recommended_path?: string | null
           updated_at?: string
           user_id: string
           weekly_hours?: number
         }
         Update: {
+          active_path_slug?: string | null
           career_interest?: string | null
           created_at?: string
           experience_level?: string
           learning_goal?: string | null
           onboarded_at?: string | null
+          path_completed?: boolean
           recommended_path?: string | null
           updated_at?: string
           user_id?: string
@@ -512,12 +647,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -541,11 +676,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -566,11 +701,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -591,11 +726,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -608,11 +743,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
