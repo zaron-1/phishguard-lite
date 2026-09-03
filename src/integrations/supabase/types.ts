@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      academy_assessment_attempts: {
+        Row: {
+          answers: Json
+          course_slug: string
+          created_at: string
+          id: string
+          module_index: number
+          passed: boolean
+          path_slug: string
+          question_ids: Json
+          score: number
+          total: number
+          user_id: string
+        }
+        Insert: {
+          answers?: Json
+          course_slug: string
+          created_at?: string
+          id?: string
+          module_index: number
+          passed?: boolean
+          path_slug: string
+          question_ids?: Json
+          score?: number
+          total?: number
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          course_slug?: string
+          created_at?: string
+          id?: string
+          module_index?: number
+          passed?: boolean
+          path_slug?: string
+          question_ids?: Json
+          score?: number
+          total?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       academy_bookmarks: {
         Row: {
           course_slug: string
@@ -54,6 +96,7 @@ export type Database = {
           knowledge_check: Json
           lesson_id: string
           narration: string | null
+          narration_audio_base64: string | null
           objectives: Json
           path_slug: string
           title: string
@@ -69,6 +112,7 @@ export type Database = {
           knowledge_check?: Json
           lesson_id: string
           narration?: string | null
+          narration_audio_base64?: string | null
           objectives?: Json
           path_slug: string
           title: string
@@ -84,6 +128,7 @@ export type Database = {
           knowledge_check?: Json
           lesson_id?: string
           narration?: string | null
+          narration_audio_base64?: string | null
           objectives?: Json
           path_slug?: string
           title?: string
@@ -92,35 +137,125 @@ export type Database = {
         }
         Relationships: []
       }
+      academy_module_assessments: {
+        Row: {
+          course_slug: string
+          created_at: string
+          id: string
+          module_index: number
+          module_title: string
+          pass_percent: number
+          path_slug: string
+          question_count: number
+          questions: Json
+          updated_at: string
+        }
+        Insert: {
+          course_slug: string
+          created_at?: string
+          id?: string
+          module_index: number
+          module_title: string
+          pass_percent?: number
+          path_slug: string
+          question_count?: number
+          questions?: Json
+          updated_at?: string
+        }
+        Update: {
+          course_slug?: string
+          created_at?: string
+          id?: string
+          module_index?: number
+          module_title?: string
+          pass_percent?: number
+          path_slug?: string
+          question_count?: number
+          questions?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      academy_module_progress: {
+        Row: {
+          assessment_passed: boolean
+          assessment_score: number | null
+          course_slug: string
+          created_at: string
+          id: string
+          last_lesson_id: string | null
+          lesson_count: number
+          lessons_completed: number
+          module_index: number
+          path_slug: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assessment_passed?: boolean
+          assessment_score?: number | null
+          course_slug: string
+          created_at?: string
+          id?: string
+          last_lesson_id?: string | null
+          lesson_count?: number
+          lessons_completed?: number
+          module_index: number
+          path_slug: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assessment_passed?: boolean
+          assessment_score?: number | null
+          course_slug?: string
+          created_at?: string
+          id?: string
+          last_lesson_id?: string | null
+          lesson_count?: number
+          lessons_completed?: number
+          module_index?: number
+          path_slug?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       academy_profiles: {
         Row: {
+          active_path_slug: string | null
           career_interest: string | null
           created_at: string
           experience_level: string
           learning_goal: string | null
           onboarded_at: string | null
+          path_completed: boolean
           recommended_path: string | null
           updated_at: string
           user_id: string
           weekly_hours: number
         }
         Insert: {
+          active_path_slug?: string | null
           career_interest?: string | null
           created_at?: string
           experience_level?: string
           learning_goal?: string | null
           onboarded_at?: string | null
+          path_completed?: boolean
           recommended_path?: string | null
           updated_at?: string
           user_id: string
           weekly_hours?: number
         }
         Update: {
+          active_path_slug?: string | null
           career_interest?: string | null
           created_at?: string
           experience_level?: string
           learning_goal?: string | null
           onboarded_at?: string | null
+          path_completed?: boolean
           recommended_path?: string | null
           updated_at?: string
           user_id?: string
