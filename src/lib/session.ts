@@ -40,6 +40,14 @@ function isExpiring(session: Session | null) {
 
 let inFlight: Promise<Session | null> | null = null;
 
+function isHardExpired(session: Session | null) {
+  return !!session?.expires_at && session.expires_at * 1000 <= Date.now();
+}
+
+async function waitForRetry() {
+  await new Promise((resolve) => window.setTimeout(resolve, 500));
+}
+
 /**
  * Reads the persisted session without a network round-trip, and silently
  * refreshes it when the access token is expired or about to expire.
@@ -54,15 +62,19 @@ export async function ensureSession(): Promise<Session | null> {
       let session = data.session;
 
       if (session && isExpiring(session)) {
-        const { data: refreshed, error } = await supabase.auth.refreshSession();
-        // Keep the existing session if the refresh call simply failed
-        // (offline / transient) and the token is not hard-expired yet.
-        if (!error && refreshed.session) session = refreshed.session;
+        let refreshed = await supabase.auth.refreshSession();
+        if (refreshed.error && !isHardExpired(session)) {
+          await waitForRetry();
+          refreshed = await supabase.auth.refreshSession();
+        }
+        // Keep a still-valid local session during a transient offline failure.
+        // Supabase's auto-refresh listener will retry when connectivity returns.
+        if (!refreshed.error && refreshed.data.session) session = refreshed.data.session;
       }
 
-      const stillValid = !!session && (session.expires_at ?? 0) * 1000 > Date.now();
-      setSessionMarker(stillValid);
-      return stillValid ? session : null;
+      const stillUsable = !!session && !isHardExpired(session);
+      setSessionMarker(stillUsable);
+      return stillUsable ? session : null;
     } catch {
       return null;
     } finally {
@@ -98,6 +110,16 @@ export function startSessionKeeper(onChange?: (session: Session | null) => void)
   window.addEventListener("online", onFocus);
   document.addEventListener("visibilitychange", onVisibility);
 
+  const { data: authSubscription } = supabase.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "USER_UPDATED") {
+      setSessionMarker(Boolean(session));
+      onChange?.(session);
+    } else if (event === "SIGNED_OUT") {
+      setSessionMarker(false);
+      onChange?.(null);
+    }
+  });
+
   // Proactive silent refresh while the app stays open.
   const interval = window.setInterval(() => void ensureSession(), 10 * 60 * 1000);
 
@@ -105,6 +127,7 @@ export function startSessionKeeper(onChange?: (session: Session | null) => void)
     window.removeEventListener("focus", onFocus);
     window.removeEventListener("online", onFocus);
     document.removeEventListener("visibilitychange", onVisibility);
+    authSubscription.subscription.unsubscribe();
     window.clearInterval(interval);
   };
 }
