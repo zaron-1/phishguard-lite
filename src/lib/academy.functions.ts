@@ -5,6 +5,7 @@ import type {
   AssessmentQuestion,
   LessonContent,
 } from "@/lib/academy/generate.server";
+import type { Json } from "@/integrations/supabase/types";
 
 const LessonInput = z.object({ lessonId: z.string().min(1).max(120) });
 
@@ -396,7 +397,7 @@ export const getModuleAssessment = createServerFn({ method: "POST" })
           course_slug: data.courseSlug,
           module_index: data.moduleIndex,
           module_title: module.title,
-          questions: generated.questions,
+          questions: generated.questions as unknown as Json,
           question_count: generated.questionCount,
           pass_percent: generated.passPercent,
         })
