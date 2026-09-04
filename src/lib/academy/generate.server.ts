@@ -1,6 +1,6 @@
 import { generateText } from "ai";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
-import { getLessonRef, getCourse, type LessonRef } from "./catalog";
+import { courseLessons, getLessonRef, getCourse, type LessonRef } from "./catalog";
 
 export interface GlossaryTerm {
   term: string;
@@ -26,6 +26,22 @@ export interface LessonContent {
   tools: string[];
   knowledgeCheck: CheckQuestion[];
   narration: string;
+  narrationAudioBase64?: string;
+}
+
+export interface AssessmentQuestion {
+  id: string;
+  scenario: string;
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  explanation: string;
+}
+
+export interface AssessmentBank {
+  questions: AssessmentQuestion[];
+  questionCount: number;
+  passPercent: number;
 }
 
 function extractJson(text: string): any {
@@ -192,6 +208,62 @@ export async function synthesizeNarration(script: string): Promise<string> {
     binary += String.fromCharCode(...buffer.subarray(i, i + chunk));
   }
   return btoa(binary);
+}
+
+/** Generate a private 15-question module bank. Correct answers never leave the server. */
+export async function generateModuleAssessment(
+  courseSlug: string,
+  moduleIndex: number,
+): Promise<AssessmentBank> {
+  const key = requireApiKey();
+  const entry = getCourse(courseSlug);
+  const module = entry?.course.modules[moduleIndex];
+  if (!entry || !module) throw new Error("That module does not exist.");
+
+  const lessonTitles = courseLessons(courseSlug)
+    .filter((lesson) => lesson.moduleIndex === moduleIndex)
+    .map((lesson) => lesson.title);
+  const gateway = createLovableAiGatewayProvider(key);
+  const { text } = await generateText({
+    model: gateway("google/gemini-3-flash-preview"),
+    system: `You create secure cybersecurity module assessments for a professional learning platform.
+Return only JSON. Write exactly 15 scenario-based questions. Each question must have four distinct options,
+one exact correctAnswer copied from options, and a concise explanation. Questions must test judgement and
+defensive reasoning, not memorised definitions. Keep every option and answer safe and authorised.
+Shape: {"questions":[{"id":"q1","scenario":"...","question":"...","options":["...","...","...","..."],"correctAnswer":"...","explanation":"..."}]}`,
+    prompt: `Course: ${entry.course.title}
+Module ${moduleIndex + 1}: ${module.title}
+Lessons: ${lessonTitles.join("; ")}
+Create the assessment now.`,
+  });
+  const parsed = extractJson(text);
+  const questions: AssessmentQuestion[] = Array.isArray(parsed.questions)
+    ? parsed.questions
+        .map((question: any, index: number) => {
+          const options = asStringArray(question?.options, 4);
+          const correctAnswer = String(question?.correctAnswer ?? "").trim();
+          if (
+            options.length !== 4 ||
+            !correctAnswer ||
+            !options.includes(correctAnswer) ||
+            !String(question?.question ?? "").trim()
+          ) {
+            return null;
+          }
+          return {
+            id: String(question?.id || `q${index + 1}`),
+            scenario: String(question?.scenario ?? "").trim(),
+            question: String(question.question).trim(),
+            options,
+            correctAnswer,
+            explanation: String(question?.explanation ?? "").trim(),
+          };
+        })
+        .filter(Boolean)
+        .slice(0, 15)
+    : [];
+  if (questions.length < 10) throw new Error("The module assessment could not be generated.");
+  return { questions, questionCount: questions.length, passPercent: 80 };
 }
 
 export function lessonRefOrThrow(lessonId: string): LessonRef {

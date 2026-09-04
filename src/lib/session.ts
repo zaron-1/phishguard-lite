@@ -98,7 +98,9 @@ export function startSessionKeeper(onChange?: (session: Session | null) => void)
     if (now - last < 5000) return; // debounce focus storms
     last = now;
     const session = await ensureSession();
-    onChange?.(session);
+    // A transient offline refresh failure must not invalidate the current route.
+    // Auth events below handle real sign-out and successful token rotation.
+    if (session) onChange?.(session);
   };
 
   const onVisibility = () => {
