@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ThemeProvider } from "@/components/theme-provider";
+import { startSessionKeeper } from "@/lib/session";
 
 function NotFoundComponent() {
   return (
@@ -127,6 +128,9 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+
+  useEffect(() => startSessionKeeper(() => router.invalidate()), [router]);
 
   return (
     <QueryClientProvider client={queryClient}>
