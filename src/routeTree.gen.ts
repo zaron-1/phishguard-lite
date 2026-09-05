@@ -25,6 +25,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAcademyIndexRouteImport } from './routes/_authenticated/academy.index'
 import { Route as AuthenticatedAcademyLessonLessonIdRouteImport } from './routes/_authenticated/academy.lesson.$lessonId'
 import { Route as AuthenticatedAcademyCourseCourseSlugRouteImport } from './routes/_authenticated/academy.course.$courseSlug'
+import { Route as AuthenticatedAcademyAssessmentCourseSlugModuleIndexRouteImport } from './routes/_authenticated/academy.assessment.$courseSlug.$moduleIndex'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -109,6 +110,12 @@ const AuthenticatedAcademyCourseCourseSlugRoute =
     path: '/academy/course/$courseSlug',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAcademyAssessmentCourseSlugModuleIndexRoute =
+  AuthenticatedAcademyAssessmentCourseSlugModuleIndexRouteImport.update({
+    id: '/academy/assessment/$courseSlug/$moduleIndex',
+    path: '/academy/assessment/$courseSlug/$moduleIndex',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/academy/': typeof AuthenticatedAcademyIndexRoute
   '/academy/course/$courseSlug': typeof AuthenticatedAcademyCourseCourseSlugRoute
   '/academy/lesson/$lessonId': typeof AuthenticatedAcademyLessonLessonIdRoute
+  '/academy/assessment/$courseSlug/$moduleIndex': typeof AuthenticatedAcademyAssessmentCourseSlugModuleIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -143,6 +151,7 @@ export interface FileRoutesByTo {
   '/academy': typeof AuthenticatedAcademyIndexRoute
   '/academy/course/$courseSlug': typeof AuthenticatedAcademyCourseCourseSlugRoute
   '/academy/lesson/$lessonId': typeof AuthenticatedAcademyLessonLessonIdRoute
+  '/academy/assessment/$courseSlug/$moduleIndex': typeof AuthenticatedAcademyAssessmentCourseSlugModuleIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -162,6 +171,7 @@ export interface FileRoutesById {
   '/_authenticated/academy/': typeof AuthenticatedAcademyIndexRoute
   '/_authenticated/academy/course/$courseSlug': typeof AuthenticatedAcademyCourseCourseSlugRoute
   '/_authenticated/academy/lesson/$lessonId': typeof AuthenticatedAcademyLessonLessonIdRoute
+  '/_authenticated/academy/assessment/$courseSlug/$moduleIndex': typeof AuthenticatedAcademyAssessmentCourseSlugModuleIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/academy/'
     | '/academy/course/$courseSlug'
     | '/academy/lesson/$lessonId'
+    | '/academy/assessment/$courseSlug/$moduleIndex'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/academy'
     | '/academy/course/$courseSlug'
     | '/academy/lesson/$lessonId'
+    | '/academy/assessment/$courseSlug/$moduleIndex'
   id:
     | '__root__'
     | '/'
@@ -216,6 +228,7 @@ export interface FileRouteTypes {
     | '/_authenticated/academy/'
     | '/_authenticated/academy/course/$courseSlug'
     | '/_authenticated/academy/lesson/$lessonId'
+    | '/_authenticated/academy/assessment/$courseSlug/$moduleIndex'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -339,6 +352,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAcademyCourseCourseSlugRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/academy/assessment/$courseSlug/$moduleIndex': {
+      id: '/_authenticated/academy/assessment/$courseSlug/$moduleIndex'
+      path: '/academy/assessment/$courseSlug/$moduleIndex'
+      fullPath: '/academy/assessment/$courseSlug/$moduleIndex'
+      preLoaderRoute: typeof AuthenticatedAcademyAssessmentCourseSlugModuleIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -354,6 +374,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAcademyIndexRoute: typeof AuthenticatedAcademyIndexRoute
   AuthenticatedAcademyCourseCourseSlugRoute: typeof AuthenticatedAcademyCourseCourseSlugRoute
   AuthenticatedAcademyLessonLessonIdRoute: typeof AuthenticatedAcademyLessonLessonIdRoute
+  AuthenticatedAcademyAssessmentCourseSlugModuleIndexRoute: typeof AuthenticatedAcademyAssessmentCourseSlugModuleIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -370,6 +391,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedAcademyCourseCourseSlugRoute,
   AuthenticatedAcademyLessonLessonIdRoute:
     AuthenticatedAcademyLessonLessonIdRoute,
+  AuthenticatedAcademyAssessmentCourseSlugModuleIndexRoute:
+    AuthenticatedAcademyAssessmentCourseSlugModuleIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

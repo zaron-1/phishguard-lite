@@ -117,6 +117,7 @@ function LessonPage() {
   const narrationMutation = useMutation({
     mutationFn: () => narrate({ data: { lessonId } }),
     onSuccess: ({ audioBase64 }) => {
+      window.localStorage.setItem(`phishguard:academy:narration:${lessonId}`, audioBase64);
       const bytes = Uint8Array.from(atob(audioBase64), (char) => char.charCodeAt(0));
       const url = URL.createObjectURL(new Blob([bytes], { type: "audio/mpeg" }));
       setAudioUrl((previous) => {
