@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { BookOpen, Compass, GraduationCap, Loader2, Sparkles, Target, Trophy } from "lucide-react";
+import { BookOpen, Compass, GraduationCap, Loader2, Lock, Sparkles, Target, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,7 +19,11 @@ import {
   getPath,
   pathLessons,
 } from "@/lib/academy/catalog";
-import { getAcademyOverview, saveAcademyProfile } from "@/lib/academy.functions";
+import {
+  getAcademyOverview,
+  saveAcademyProfile,
+  setActiveLearningPath,
+} from "@/lib/academy.functions";
 
 export const Route = createFileRoute("/_authenticated/academy/")({
   head: () => ({
@@ -57,6 +61,7 @@ function AcademyHome() {
   const qc = useQueryClient();
   const fetchOverview = useServerFn(getAcademyOverview);
   const saveProfile = useServerFn(saveAcademyProfile);
+  const choosePath = useServerFn(setActiveLearningPath);
 
   const { data, isLoading } = useQuery({
     queryKey: ["academy", "overview"],
@@ -84,11 +89,21 @@ function AcademyHome() {
     onError: (e: any) => toast.error(e?.message ?? "Could not save your profile."),
   });
 
+  const pathMutation = useMutation({
+    mutationFn: (pathSlug: string) => choosePath({ data: { pathSlug } }),
+    onSuccess: () => {
+      toast.success("Your active learning path was updated.");
+      qc.invalidateQueries({ queryKey: ["academy", "overview"] });
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
   const profile = data?.profile ?? null;
   const completed = new Set(
     (data?.progress ?? []).filter((p) => p.completed).map((p) => p.lessonId),
   );
   const recommended = profile?.recommendedPath ? getPath(profile.recommendedPath) : undefined;
+  const activePathSlug = profile?.activePathSlug ?? null;
   const showOnboarding = !isLoading && (!profile?.onboarded || editing);
 
   const overallPct = Math.round((completed.size / TOTAL_LESSONS) * 100);
@@ -278,6 +293,8 @@ function AcademyHome() {
                 const done = lessons.filter((l) => completed.has(l.id)).length;
                 const pct = Math.round((done / lessons.length) * 100);
                 const isRecommended = recommended?.slug === path.slug;
+                const isActive = activePathSlug === path.slug;
+                const isLocked = !!activePathSlug && !isActive && !profile?.pathCompleted;
                 return (
                   <Card
                     key={path.slug}
@@ -286,7 +303,11 @@ function AcademyHome() {
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between gap-2">
                         <CardTitle className="text-base">{path.title}</CardTitle>
-                        {isRecommended && <Badge>Recommended</Badge>}
+                        <div className="flex flex-wrap justify-end gap-1">
+                          {isRecommended && <Badge>Recommended</Badge>}
+                          {isActive && <Badge variant="secondary">Active path</Badge>}
+                          {isLocked && <Badge variant="outline"><Lock className="mr-1 h-3 w-3" />Locked</Badge>}
+                        </div>
                       </div>
                       <CardDescription>{path.tagline}</CardDescription>
                     </CardHeader>
@@ -299,23 +320,38 @@ function AcademyHome() {
                       </div>
                       <Progress value={pct} className="h-1.5" />
                       <div className="space-y-1.5">
-                        {path.courses.map((course) => (
-                          <Link
-                            key={course.slug}
-                            to="/academy/course/$courseSlug"
-                            params={{ courseSlug: course.slug }}
-                            className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
-                          >
-                            <span className="flex min-w-0 items-center gap-2">
-                              <BookOpen className="h-4 w-4 shrink-0 text-primary" />
-                              <span className="truncate">{course.title}</span>
-                            </span>
-                            <span className="shrink-0 text-xs text-muted-foreground">
-                              {courseLessonCount(course.slug)} lessons
-                            </span>
-                          </Link>
-                        ))}
+                        {path.courses.map((course) =>
+                          isLocked ? (
+                            <div key={course.slug} className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground">
+                              <span className="flex min-w-0 items-center gap-2"><Lock className="h-4 w-4 shrink-0" /><span className="truncate">{course.title}</span></span>
+                              <span className="shrink-0 text-xs">Locked</span>
+                            </div>
+                          ) : (
+                            <Link
+                              key={course.slug}
+                              to="/academy/course/$courseSlug"
+                              params={{ courseSlug: course.slug }}
+                              className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
+                            >
+                              <span className="flex min-w-0 items-center gap-2">
+                                <BookOpen className="h-4 w-4 shrink-0 text-primary" />
+                                <span className="truncate">{course.title}</span>
+                              </span>
+                              <span className="shrink-0 text-xs text-muted-foreground">{courseLessonCount(course.slug)} lessons</span>
+                            </Link>
+                          ),
+                        )}
                       </div>
+                      {!isActive && !isLocked && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => pathMutation.mutate(path.slug)}
+                          disabled={pathMutation.isPending}
+                        >
+                          Make active path
+                        </Button>
+                      )}
                     </CardContent>
                   </Card>
                 );

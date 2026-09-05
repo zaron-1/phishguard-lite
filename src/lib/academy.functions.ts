@@ -42,6 +42,8 @@ const ModuleInput = z.object({
 const AssessmentSubmitInput = ModuleInput.extend({
   questionIds: z.array(z.string().min(1).max(80)).min(10).max(15),
   answers: z.array(z.string().min(1).max(500)).min(10).max(15),
+}).refine((value) => value.questionIds.length === value.answers.length, {
+  message: "Each assessment question needs one answer.",
 });
 
 export type AcademyProfile = {
@@ -200,6 +202,25 @@ export const saveAcademyProfile = createServerFn({ method: "POST" })
     );
     if (error) throw new Error("Could not save your learning profile.");
     return { recommendedPath };
+  });
+
+export const setActiveLearningPath = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ pathSlug: z.string().min(1).max(120) }).parse(input))
+  .handler(async ({ context, data }): Promise<{ activePathSlug: string }> => {
+    const { getPath } = await import("@/lib/academy/catalog");
+    if (!getPath(data.pathSlug)) throw new Error("That learning path does not exist.");
+    const { error } = await context.supabase
+      .from("academy_profiles")
+      .update({ active_path_slug: data.pathSlug })
+      .eq("user_id", context.userId);
+    if (error) {
+      if (error.message.includes("Complete the active learning path")) {
+        throw new Error("Complete your active learning path before choosing another one.");
+      }
+      throw new Error("Could not change your learning path.");
+    }
+    return { activePathSlug: data.pathSlug };
   });
 
 export const getAcademyLesson = createServerFn({ method: "POST" })

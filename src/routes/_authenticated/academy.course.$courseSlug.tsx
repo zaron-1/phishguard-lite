@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, CheckCircle2, Circle, Clock, Wrench } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Circle, ClipboardCheck, Clock, Lock, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -51,6 +51,10 @@ function CoursePage() {
   );
   const doneCount = allIds.filter((id) => completed.has(id)).length;
   const pct = Math.round((doneCount / allIds.length) * 100);
+  const moduleProgress = new Map(
+    (data?.moduleProgress ?? []).filter((item) => item.courseSlug === course.slug).map((item) => [item.moduleIndex, item]),
+  );
+  const pathLocked = !!data?.profile?.activePathSlug && data.profile.activePathSlug !== path.slug && !data.profile.pathCompleted;
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-6">
@@ -77,6 +81,11 @@ function CoursePage() {
             {doneCount} of {allIds.length} lessons complete
           </p>
         </div>
+        {pathLocked && (
+          <div className="flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-300">
+            <Lock className="h-4 w-4 shrink-0" /> Finish your active learning path before opening this course.
+          </div>
+        )}
       </header>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -120,16 +129,29 @@ function CoursePage() {
       <div className="space-y-5">
         {course.modules.map((mod, mi) => (
           <section key={mod.title} className="space-y-2">
+            {(() => {
+              const previousPassed = mi === 0 || moduleProgress.get(mi - 1)?.assessmentPassed === true;
+              const moduleLocked = pathLocked || !previousPassed;
+              const progress = moduleProgress.get(mi);
+              return (
+                <>
             <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              {moduleLocked && <Lock className="mr-1 inline h-3.5 w-3.5" />}
               Module {mi + 1} · {mod.title}
             </h2>
-            <ul className="divide-y rounded-xl border bg-card">
+            <ul className={`divide-y rounded-xl border bg-card ${moduleLocked ? "opacity-60" : ""}`}>
               {mod.lessons.map((title, li) => {
                 const id = makeLessonId(course.slug, mi, li);
                 const done = completed.has(id);
                 return (
                   <li key={id}>
-                    <Link
+                    {moduleLocked ? (
+                      <div className="flex items-center gap-3 p-3 text-sm text-muted-foreground">
+                        <Lock className="h-4 w-4 shrink-0" />
+                        <span className="min-w-0 flex-1">{title}</span>
+                        <span className="shrink-0 text-xs">Locked</span>
+                      </div>
+                    ) : <Link
                       to="/academy/lesson/$lessonId"
                       params={{ lessonId: id }}
                       className="flex items-center gap-3 p-3 text-sm transition-colors hover:bg-muted"
@@ -143,11 +165,18 @@ function CoursePage() {
                       <span className="shrink-0 text-xs text-muted-foreground">
                         Lesson {li + 1}
                       </span>
-                    </Link>
+                    </Link>}
                   </li>
                 );
               })}
             </ul>
+            <div className="flex items-center justify-between gap-3 rounded-lg border border-primary/20 bg-primary/5 p-3">
+              <span className="text-xs text-muted-foreground">{progress?.assessmentPassed ? `Passed at ${progress.assessmentScore ?? 80}%` : "Pass with 80% to unlock the next module."}</span>
+              {moduleLocked ? <Lock className="h-4 w-4 text-muted-foreground" /> : <Button asChild size="sm" variant="outline"><Link to="/academy/assessment/$courseSlug/$moduleIndex" params={{ courseSlug: course.slug, moduleIndex: String(mi) }}><ClipboardCheck className="mr-1.5 h-4 w-4" />Module assessment</Link></Button>}
+            </div>
+                </>
+              );
+            })()}
           </section>
         ))}
       </div>
