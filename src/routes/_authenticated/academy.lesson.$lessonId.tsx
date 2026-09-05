@@ -99,6 +99,16 @@ function LessonPage() {
   }, [bookmarkExists]);
 
   useEffect(() => {
+    setSelected({});
+    setSubmitted(false);
+    audioRef.current?.pause();
+    setAudioUrl((previous) => {
+      if (previous) URL.revokeObjectURL(previous);
+      return null;
+    });
+  }, [lessonId]);
+
+  useEffect(() => {
     return () => {
       if (audioUrl) URL.revokeObjectURL(audioUrl);
     };
@@ -117,6 +127,24 @@ function LessonPage() {
     },
     onError: (error: Error) => toast.error(error.message || "Narration is unavailable right now."),
   });
+
+  useEffect(() => {
+    if (!lesson) return;
+    const cacheKey = `phishguard:academy:narration:${lessonId}`;
+    const cachedAudio = lesson.narrationAudioBase64 || window.localStorage.getItem(cacheKey);
+    if (cachedAudio) {
+      if (!lesson.narrationAudioBase64) window.localStorage.setItem(cacheKey, cachedAudio);
+      const bytes = Uint8Array.from(atob(cachedAudio), (char) => char.charCodeAt(0));
+      const url = URL.createObjectURL(new Blob([bytes], { type: "audio/mpeg" }));
+      setAudioUrl((previous) => {
+        if (previous) URL.revokeObjectURL(previous);
+        return url;
+      });
+      window.setTimeout(() => void audioRef.current?.play().catch(() => undefined), 0);
+      return;
+    }
+    narrationMutation.mutate();
+  }, [lesson, lessonId]);
 
   const progressMutation = useMutation({
     mutationFn: (completedValue: boolean) =>
