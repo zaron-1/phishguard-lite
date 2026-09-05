@@ -2,7 +2,16 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { BookOpen, Compass, GraduationCap, Loader2, Lock, Sparkles, Target, Trophy } from "lucide-react";
+import {
+  BookOpen,
+  Compass,
+  GraduationCap,
+  Loader2,
+  Lock,
+  Sparkles,
+  Target,
+  Trophy,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -306,7 +315,12 @@ function AcademyHome() {
                         <div className="flex flex-wrap justify-end gap-1">
                           {isRecommended && <Badge>Recommended</Badge>}
                           {isActive && <Badge variant="secondary">Active path</Badge>}
-                          {isLocked && <Badge variant="outline"><Lock className="mr-1 h-3 w-3" />Locked</Badge>}
+                          {isLocked && (
+                            <Badge variant="outline">
+                              <Lock className="mr-1 h-3 w-3" />
+                              Locked
+                            </Badge>
+                          )}
                         </div>
                       </div>
                       <CardDescription>{path.tagline}</CardDescription>
@@ -322,8 +336,14 @@ function AcademyHome() {
                       <div className="space-y-1.5">
                         {path.courses.map((course) =>
                           isLocked ? (
-                            <div key={course.slug} className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground">
-                              <span className="flex min-w-0 items-center gap-2"><Lock className="h-4 w-4 shrink-0" /><span className="truncate">{course.title}</span></span>
+                            <div
+                              key={course.slug}
+                              className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground"
+                            >
+                              <span className="flex min-w-0 items-center gap-2">
+                                <Lock className="h-4 w-4 shrink-0" />
+                                <span className="truncate">{course.title}</span>
+                              </span>
                               <span className="shrink-0 text-xs">Locked</span>
                             </div>
                           ) : (
@@ -337,7 +357,9 @@ function AcademyHome() {
                                 <BookOpen className="h-4 w-4 shrink-0 text-primary" />
                                 <span className="truncate">{course.title}</span>
                               </span>
-                              <span className="shrink-0 text-xs text-muted-foreground">{courseLessonCount(course.slug)} lessons</span>
+                              <span className="shrink-0 text-xs text-muted-foreground">
+                                {courseLessonCount(course.slug)} lessons
+                              </span>
                             </Link>
                           ),
                         )}

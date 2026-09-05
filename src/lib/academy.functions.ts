@@ -1,10 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import type {
-  AssessmentQuestion,
-  LessonContent,
-} from "@/lib/academy/generate.server";
+import type { AssessmentQuestion, LessonContent } from "@/lib/academy/generate.server";
 import type { Json } from "@/integrations/supabase/types";
 
 const LessonInput = z.object({ lessonId: z.string().min(1).max(120) });
@@ -113,7 +110,9 @@ export const getAcademyOverview = createServerFn({ method: "GET" })
       supabase.from("academy_quiz_results").select("score, total").eq("user_id", userId).limit(500),
       supabase
         .from("academy_module_progress")
-        .select("course_slug, module_index, lessons_completed, lesson_count, assessment_score, assessment_passed")
+        .select(
+          "course_slug, module_index, lessons_completed, lesson_count, assessment_score, assessment_passed",
+        )
         .eq("user_id", userId)
         .order("course_slug")
         .order("module_index"),
@@ -194,9 +193,7 @@ export const saveAcademyProfile = createServerFn({ method: "POST" })
         learning_goal: data.learningGoal ?? null,
         recommended_path: recommendedPath,
         onboarded_at: new Date().toISOString(),
-        ...(existing
-          ? {}
-          : { active_path_slug: recommendedPath, path_completed: false }),
+        ...(existing ? {} : { active_path_slug: recommendedPath, path_completed: false }),
       },
       { onConflict: "user_id" },
     );
@@ -206,7 +203,9 @@ export const saveAcademyProfile = createServerFn({ method: "POST" })
 
 export const setActiveLearningPath = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ pathSlug: z.string().min(1).max(120) }).parse(input))
+  .inputValidator((input: unknown) =>
+    z.object({ pathSlug: z.string().min(1).max(120) }).parse(input),
+  )
   .handler(async ({ context, data }): Promise<{ activePathSlug: string }> => {
     const { getPath } = await import("@/lib/academy/catalog");
     if (!getPath(data.pathSlug)) throw new Error("That learning path does not exist.");
@@ -352,7 +351,10 @@ export const setLessonProgress = createServerFn({ method: "POST" })
       .eq("user_id", context.userId)
       .eq("course_slug", ref.courseSlug)
       .eq("completed", true)
-      .in("lesson_id", moduleLessons.map((lesson) => lesson.id));
+      .in(
+        "lesson_id",
+        moduleLessons.map((lesson) => lesson.id),
+      );
     await context.supabase.from("academy_module_progress").upsert(
       {
         user_id: context.userId,
@@ -371,140 +373,155 @@ export const setLessonProgress = createServerFn({ method: "POST" })
 export const getModuleAssessment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => ModuleInput.parse(input))
-  .handler(async ({ context, data }): Promise<{
-    courseSlug: string;
-    moduleIndex: number;
-    moduleTitle: string;
-    passPercent: number;
-    questions: Array<Pick<AssessmentQuestion, "id" | "scenario" | "question" | "options">>;
-  }> => {
-    const { getCourse } = await import("@/lib/academy/catalog");
-    const entry = getCourse(data.courseSlug);
-    const module = entry?.course.modules[data.moduleIndex];
-    if (!entry || !module) throw new Error("That module does not exist.");
-    const { data: profile } = await context.supabase
-      .from("academy_profiles")
-      .select("active_path_slug")
-      .eq("user_id", context.userId)
-      .maybeSingle();
-    if (profile?.active_path_slug && profile.active_path_slug !== entry.path.slug) {
-      throw new Error("This learning path is locked until your active path is complete.");
-    }
-    if (data.moduleIndex > 0) {
-      const { data: previous } = await context.supabase
-        .from("academy_module_progress")
-        .select("assessment_passed")
+  .handler(
+    async ({
+      context,
+      data,
+    }): Promise<{
+      courseSlug: string;
+      moduleIndex: number;
+      moduleTitle: string;
+      passPercent: number;
+      questions: Array<Pick<AssessmentQuestion, "id" | "scenario" | "question" | "options">>;
+    }> => {
+      const { getCourse } = await import("@/lib/academy/catalog");
+      const entry = getCourse(data.courseSlug);
+      const module = entry?.course.modules[data.moduleIndex];
+      if (!entry || !module) throw new Error("That module does not exist.");
+      const { data: profile } = await context.supabase
+        .from("academy_profiles")
+        .select("active_path_slug")
         .eq("user_id", context.userId)
-        .eq("course_slug", data.courseSlug)
-        .eq("module_index", data.moduleIndex - 1)
         .maybeSingle();
-      if (!previous?.assessment_passed) throw new Error("Pass the previous module assessment first.");
-    }
+      if (profile?.active_path_slug && profile.active_path_slug !== entry.path.slug) {
+        throw new Error("This learning path is locked until your active path is complete.");
+      }
+      if (data.moduleIndex > 0) {
+        const { data: previous } = await context.supabase
+          .from("academy_module_progress")
+          .select("assessment_passed")
+          .eq("user_id", context.userId)
+          .eq("course_slug", data.courseSlug)
+          .eq("module_index", data.moduleIndex - 1)
+          .maybeSingle();
+        if (!previous?.assessment_passed)
+          throw new Error("Pass the previous module assessment first.");
+      }
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    let { data: bank } = await supabaseAdmin
-      .from("academy_module_assessments")
-      .select("questions, question_count, pass_percent")
-      .eq("course_slug", data.courseSlug)
-      .eq("module_index", data.moduleIndex)
-      .maybeSingle();
-    if (!bank) {
-      const { generateModuleAssessment } = await import("@/lib/academy/generate.server");
-      const generated = await generateModuleAssessment(data.courseSlug, data.moduleIndex);
-      const inserted = await supabaseAdmin
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      let { data: bank } = await supabaseAdmin
         .from("academy_module_assessments")
-        .insert({
-          path_slug: entry.path.slug,
-          course_slug: data.courseSlug,
-          module_index: data.moduleIndex,
-          module_title: module.title,
-          questions: generated.questions as unknown as Json,
-          question_count: generated.questionCount,
-          pass_percent: generated.passPercent,
-        })
         .select("questions, question_count, pass_percent")
-        .single();
-      if (inserted.error || !inserted.data) throw new Error("The module assessment is unavailable.");
-      bank = inserted.data;
-    }
-    const questions = (bank.questions as unknown as AssessmentQuestion[])
-      .sort(() => Math.random() - 0.5)
-      .slice(0, Math.min(15, bank.question_count))
-      .map(({ id, scenario, question, options }) => ({
-        id,
-        scenario,
-        question,
-        options: [...options].sort(() => Math.random() - 0.5),
-      }));
-    return {
-      courseSlug: data.courseSlug,
-      moduleIndex: data.moduleIndex,
-      moduleTitle: module.title,
-      passPercent: bank.pass_percent,
-      questions,
-    };
-  });
+        .eq("course_slug", data.courseSlug)
+        .eq("module_index", data.moduleIndex)
+        .maybeSingle();
+      if (!bank) {
+        const { generateModuleAssessment } = await import("@/lib/academy/generate.server");
+        const generated = await generateModuleAssessment(data.courseSlug, data.moduleIndex);
+        const inserted = await supabaseAdmin
+          .from("academy_module_assessments")
+          .insert({
+            path_slug: entry.path.slug,
+            course_slug: data.courseSlug,
+            module_index: data.moduleIndex,
+            module_title: module.title,
+            questions: generated.questions as unknown as Json,
+            question_count: generated.questionCount,
+            pass_percent: generated.passPercent,
+          })
+          .select("questions, question_count, pass_percent")
+          .single();
+        if (inserted.error || !inserted.data)
+          throw new Error("The module assessment is unavailable.");
+        bank = inserted.data;
+      }
+      const questions = (bank.questions as unknown as AssessmentQuestion[])
+        .sort(() => Math.random() - 0.5)
+        .slice(0, Math.min(15, bank.question_count))
+        .map(({ id, scenario, question, options }) => ({
+          id,
+          scenario,
+          question,
+          options: [...options].sort(() => Math.random() - 0.5),
+        }));
+      return {
+        courseSlug: data.courseSlug,
+        moduleIndex: data.moduleIndex,
+        moduleTitle: module.title,
+        passPercent: bank.pass_percent,
+        questions,
+      };
+    },
+  );
 
 export const submitModuleAssessment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => AssessmentSubmitInput.parse(input))
-  .handler(async ({ context, data }): Promise<{ score: number; total: number; passed: boolean }> => {
-    const { getCourse } = await import("@/lib/academy/catalog");
-    const entry = getCourse(data.courseSlug);
-    const module = entry?.course.modules[data.moduleIndex];
-    if (!entry || !module) throw new Error("That module does not exist.");
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: bank } = await supabaseAdmin
-      .from("academy_module_assessments")
-      .select("questions, pass_percent")
-      .eq("course_slug", data.courseSlug)
-      .eq("module_index", data.moduleIndex)
-      .maybeSingle();
-    if (!bank) throw new Error("Open the assessment before submitting it.");
-    const questions = bank.questions as unknown as AssessmentQuestion[];
-    const byId = new Map(questions.map((question) => [question.id, question]));
-    const pairs = data.questionIds.map((id, index) => ({ question: byId.get(id), answer: data.answers[index] }));
-    if (pairs.some((pair) => !pair.question)) throw new Error("Assessment answers are invalid.");
-    const correct = pairs.filter((pair) => pair.question?.correctAnswer === pair.answer).length;
-    const total = pairs.length;
-    const score = Math.round((correct / total) * 100);
-    const passed = score >= bank.pass_percent;
-    await supabaseAdmin.from("academy_assessment_attempts").insert({
-      user_id: context.userId,
-      path_slug: entry.path.slug,
-      course_slug: data.courseSlug,
-      module_index: data.moduleIndex,
-      question_ids: data.questionIds,
-      answers: data.answers,
-      score,
-      total,
-      passed,
-    });
-    const moduleLessons = (await import("@/lib/academy/catalog")).courseLessons(data.courseSlug).filter(
-      (lesson) => lesson.moduleIndex === data.moduleIndex,
-    );
-    const { count } = await context.supabase
-      .from("academy_progress")
-      .select("lesson_id", { count: "exact", head: true })
-      .eq("user_id", context.userId)
-      .eq("course_slug", data.courseSlug)
-      .eq("completed", true)
-      .in("lesson_id", moduleLessons.map((lesson) => lesson.id));
-    await supabaseAdmin.from("academy_module_progress").upsert(
-      {
+  .handler(
+    async ({ context, data }): Promise<{ score: number; total: number; passed: boolean }> => {
+      const { getCourse } = await import("@/lib/academy/catalog");
+      const entry = getCourse(data.courseSlug);
+      const module = entry?.course.modules[data.moduleIndex];
+      if (!entry || !module) throw new Error("That module does not exist.");
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: bank } = await supabaseAdmin
+        .from("academy_module_assessments")
+        .select("questions, pass_percent")
+        .eq("course_slug", data.courseSlug)
+        .eq("module_index", data.moduleIndex)
+        .maybeSingle();
+      if (!bank) throw new Error("Open the assessment before submitting it.");
+      const questions = bank.questions as unknown as AssessmentQuestion[];
+      const byId = new Map(questions.map((question) => [question.id, question]));
+      const pairs = data.questionIds.map((id, index) => ({
+        question: byId.get(id),
+        answer: data.answers[index],
+      }));
+      if (pairs.some((pair) => !pair.question)) throw new Error("Assessment answers are invalid.");
+      const correct = pairs.filter((pair) => pair.question?.correctAnswer === pair.answer).length;
+      const total = pairs.length;
+      const score = Math.round((correct / total) * 100);
+      const passed = score >= bank.pass_percent;
+      await supabaseAdmin.from("academy_assessment_attempts").insert({
         user_id: context.userId,
         path_slug: entry.path.slug,
         course_slug: data.courseSlug,
         module_index: data.moduleIndex,
-        lessons_completed: count ?? 0,
-        lesson_count: moduleLessons.length,
-        assessment_score: score,
-        assessment_passed: passed,
-      },
-      { onConflict: "user_id,course_slug,module_index" },
-    );
-    return { score, total, passed };
-  });
+        question_ids: data.questionIds,
+        answers: data.answers,
+        score,
+        total,
+        passed,
+      });
+      const moduleLessons = (await import("@/lib/academy/catalog"))
+        .courseLessons(data.courseSlug)
+        .filter((lesson) => lesson.moduleIndex === data.moduleIndex);
+      const { count } = await context.supabase
+        .from("academy_progress")
+        .select("lesson_id", { count: "exact", head: true })
+        .eq("user_id", context.userId)
+        .eq("course_slug", data.courseSlug)
+        .eq("completed", true)
+        .in(
+          "lesson_id",
+          moduleLessons.map((lesson) => lesson.id),
+        );
+      await supabaseAdmin.from("academy_module_progress").upsert(
+        {
+          user_id: context.userId,
+          path_slug: entry.path.slug,
+          course_slug: data.courseSlug,
+          module_index: data.moduleIndex,
+          lessons_completed: count ?? 0,
+          lesson_count: moduleLessons.length,
+          assessment_score: score,
+          assessment_passed: passed,
+        },
+        { onConflict: "user_id,course_slug,module_index" },
+      );
+      return { score, total, passed };
+    },
+  );
 
 export const toggleLessonBookmark = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

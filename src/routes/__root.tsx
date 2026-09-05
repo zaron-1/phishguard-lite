@@ -84,17 +84,37 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "theme-color", content: "#070e16" },
       { title: "PhishGuard Lite" },
-      { name: "description", content: "PhishGuard AI is a PWA that detects phishing links and teaches cybersecurity using AI." },
+      {
+        name: "description",
+        content:
+          "PhishGuard AI is a PWA that detects phishing links and teaches cybersecurity using AI.",
+      },
       { name: "author", content: "Lovable" },
       { property: "og:title", content: "PhishGuard Lite" },
-      { property: "og:description", content: "PhishGuard AI is a PWA that detects phishing links and teaches cybersecurity using AI." },
+      {
+        property: "og:description",
+        content:
+          "PhishGuard AI is a PWA that detects phishing links and teaches cybersecurity using AI.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "PhishGuard Lite" },
-      { name: "twitter:description", content: "PhishGuard AI is a PWA that detects phishing links and teaches cybersecurity using AI." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/81783823-3ff3-4bd0-9845-5ac5f28c80c1/id-preview-4b4e1099--0c7e790e-7857-4cf3-8ef7-a9008faf0865.lovable.app-1780419694989.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/81783823-3ff3-4bd0-9845-5ac5f28c80c1/id-preview-4b4e1099--0c7e790e-7857-4cf3-8ef7-a9008faf0865.lovable.app-1780419694989.png" },
+      {
+        name: "twitter:description",
+        content:
+          "PhishGuard AI is a PWA that detects phishing links and teaches cybersecurity using AI.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/81783823-3ff3-4bd0-9845-5ac5f28c80c1/id-preview-4b4e1099--0c7e790e-7857-4cf3-8ef7-a9008faf0865.lovable.app-1780419694989.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/81783823-3ff3-4bd0-9845-5ac5f28c80c1/id-preview-4b4e1099--0c7e790e-7857-4cf3-8ef7-a9008faf0865.lovable.app-1780419694989.png",
+      },
     ],
     links: [
       {
