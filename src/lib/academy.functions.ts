@@ -211,6 +211,15 @@ export const setActiveLearningPath = createServerFn({ method: "POST" })
   .handler(async ({ context, data }): Promise<{ activePathSlug: string }> => {
     const { getPath } = await import("@/lib/academy/catalog");
     if (!getPath(data.pathSlug)) throw new Error("That learning path does not exist.");
+    const { data: existing } = await context.supabase
+      .from("academy_profiles")
+      .select("active_path_slug, path_completed")
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    if (!existing) throw new Error("Complete your learning profile before choosing a path.");
+    if (existing.active_path_slug && existing.active_path_slug !== data.pathSlug && !existing.path_completed) {
+      throw new Error("Complete your active learning path before choosing another one.");
+    }
     const { error } = await context.supabase
       .from("academy_profiles")
       .update({ active_path_slug: data.pathSlug, path_completed: false })
@@ -593,7 +602,7 @@ export const submitModuleAssessment = createServerFn({ method: "POST" })
         { onConflict: "user_id,course_slug,module_index" },
       );
       if (passed) {
-        const { data: pathLessons } = await context.supabase
+      const { data: completedPathLessons } = await context.supabase
           .from("academy_progress")
           .select("lesson_id")
           .eq("user_id", context.userId)
@@ -601,7 +610,7 @@ export const submitModuleAssessment = createServerFn({ method: "POST" })
           .eq("completed", true);
         const { courseLessons, pathLessons: getPathLessons } =
           await import("@/lib/academy/catalog");
-        const completedIds = new Set((pathLessons ?? []).map((row) => row.lesson_id));
+        const completedIds = new Set((completedPathLessons ?? []).map((row) => row.lesson_id));
         const finished = getPathLessons(entry.path.slug).every((lesson) =>
           completedIds.has(lesson.id),
         );
