@@ -39,9 +39,13 @@ const ModuleInput = z.object({
 const AssessmentSubmitInput = ModuleInput.extend({
   questionIds: z.array(z.string().min(1).max(80)).min(10).max(15),
   answers: z.array(z.string().min(1).max(500)).min(10).max(15),
-}).refine((value) => value.questionIds.length === value.answers.length, {
-  message: "Each assessment question needs one answer.",
-});
+})
+  .refine((value) => value.questionIds.length === value.answers.length, {
+    message: "Each assessment question needs one answer.",
+  })
+  .refine((value) => new Set(value.questionIds).size === value.questionIds.length, {
+    message: "Each assessment question can only be submitted once.",
+  });
 
 export type AcademyProfile = {
   experienceLevel: string;
@@ -209,9 +213,22 @@ export const setActiveLearningPath = createServerFn({ method: "POST" })
   .handler(async ({ context, data }): Promise<{ activePathSlug: string }> => {
     const { getPath } = await import("@/lib/academy/catalog");
     if (!getPath(data.pathSlug)) throw new Error("That learning path does not exist.");
+    const { data: existing } = await context.supabase
+      .from("academy_profiles")
+      .select("active_path_slug, path_completed")
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    if (!existing) throw new Error("Complete your learning profile before choosing a path.");
+    if (
+      existing.active_path_slug &&
+      existing.active_path_slug !== data.pathSlug &&
+      !existing.path_completed
+    ) {
+      throw new Error("Complete your active learning path before choosing another one.");
+    }
     const { error } = await context.supabase
       .from("academy_profiles")
-      .update({ active_path_slug: data.pathSlug })
+      .update({ active_path_slug: data.pathSlug, path_completed: false })
       .eq("user_id", context.userId);
     if (error) {
       if (error.message.includes("Complete the active learning path")) {
@@ -228,6 +245,29 @@ export const getAcademyLesson = createServerFn({ method: "POST" })
   .handler(async ({ context, data }): Promise<LessonContent> => {
     const { lessonRefOrThrow, writeLesson } = await import("@/lib/academy/generate.server");
     const ref = lessonRefOrThrow(data.lessonId);
+    const { data: profile } = await context.supabase
+      .from("academy_profiles")
+      .select("active_path_slug, path_completed")
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    if (
+      profile?.active_path_slug &&
+      profile.active_path_slug !== ref.pathSlug &&
+      !profile.path_completed
+    ) {
+      throw new Error("Finish your active learning path before opening another path.");
+    }
+    if (ref.moduleIndex > 0) {
+      const { data: previousModule } = await context.supabase
+        .from("academy_module_progress")
+        .select("assessment_passed")
+        .eq("user_id", context.userId)
+        .eq("course_slug", ref.courseSlug)
+        .eq("module_index", ref.moduleIndex - 1)
+        .maybeSingle();
+      if (!previousModule?.assessment_passed)
+        throw new Error("Pass the previous module assessment first.");
+    }
 
     const { data: cached } = await context.supabase
       .from("academy_lessons")
@@ -315,11 +355,33 @@ export const setLessonProgress = createServerFn({ method: "POST" })
 
     const { data: profile } = await context.supabase
       .from("academy_profiles")
-      .select("active_path_slug")
+      .select("active_path_slug, path_completed")
       .eq("user_id", context.userId)
       .maybeSingle();
-    if (profile?.active_path_slug && profile.active_path_slug !== ref.pathSlug) {
+    if (
+      profile?.active_path_slug &&
+      profile.active_path_slug !== ref.pathSlug &&
+      !profile.path_completed
+    ) {
       throw new Error("Finish your active learning path before opening another path.");
+    }
+    const { data: moduleState } = await context.supabase
+      .from("academy_module_progress")
+      .select("assessment_passed")
+      .eq("user_id", context.userId)
+      .eq("course_slug", ref.courseSlug)
+      .eq("module_index", ref.moduleIndex)
+      .maybeSingle();
+    if (ref.moduleIndex > 0) {
+      const { data: previousModule } = await context.supabase
+        .from("academy_module_progress")
+        .select("assessment_passed")
+        .eq("user_id", context.userId)
+        .eq("course_slug", ref.courseSlug)
+        .eq("module_index", ref.moduleIndex - 1)
+        .maybeSingle();
+      if (!previousModule?.assessment_passed)
+        throw new Error("Pass the previous module assessment first.");
     }
 
     const patch: Record<string, unknown> = {
@@ -340,8 +402,7 @@ export const setLessonProgress = createServerFn({ method: "POST" })
       .upsert(patch as any, { onConflict: "user_id,lesson_id" });
     if (error) throw new Error("Could not save your progress.");
 
-    const { courseLessons, getCourse } = await import("@/lib/academy/catalog");
-    const course = getCourse(ref.courseSlug)?.course;
+    const { courseLessons } = await import("@/lib/academy/catalog");
     const moduleLessons = courseLessons(ref.courseSlug).filter(
       (lesson) => lesson.moduleIndex === ref.moduleIndex,
     );
@@ -355,6 +416,13 @@ export const setLessonProgress = createServerFn({ method: "POST" })
         "lesson_id",
         moduleLessons.map((lesson) => lesson.id),
       );
+    const { data: existingModule } = await context.supabase
+      .from("academy_module_progress")
+      .select("assessment_score, assessment_passed")
+      .eq("user_id", context.userId)
+      .eq("course_slug", ref.courseSlug)
+      .eq("module_index", ref.moduleIndex)
+      .maybeSingle();
     await context.supabase.from("academy_module_progress").upsert(
       {
         user_id: context.userId,
@@ -364,6 +432,8 @@ export const setLessonProgress = createServerFn({ method: "POST" })
         lessons_completed: count ?? 0,
         lesson_count: moduleLessons.length,
         last_lesson_id: ref.id,
+        assessment_score: existingModule?.assessment_score ?? null,
+        assessment_passed: existingModule?.assessment_passed ?? false,
       },
       { onConflict: "user_id,course_slug,module_index" },
     );
@@ -390,10 +460,14 @@ export const getModuleAssessment = createServerFn({ method: "POST" })
       if (!entry || !module) throw new Error("That module does not exist.");
       const { data: profile } = await context.supabase
         .from("academy_profiles")
-        .select("active_path_slug")
+        .select("active_path_slug, path_completed")
         .eq("user_id", context.userId)
         .maybeSingle();
-      if (profile?.active_path_slug && profile.active_path_slug !== entry.path.slug) {
+      if (
+        profile?.active_path_slug &&
+        profile.active_path_slug !== entry.path.slug &&
+        !profile.path_completed
+      ) {
         throw new Error("This learning path is locked until your active path is complete.");
       }
       if (data.moduleIndex > 0) {
@@ -463,6 +537,29 @@ export const submitModuleAssessment = createServerFn({ method: "POST" })
       const entry = getCourse(data.courseSlug);
       const module = entry?.course.modules[data.moduleIndex];
       if (!entry || !module) throw new Error("That module does not exist.");
+      const { data: profile } = await context.supabase
+        .from("academy_profiles")
+        .select("active_path_slug, path_completed")
+        .eq("user_id", context.userId)
+        .maybeSingle();
+      if (
+        profile?.active_path_slug &&
+        profile.active_path_slug !== entry.path.slug &&
+        !profile.path_completed
+      ) {
+        throw new Error("This learning path is locked until your active path is complete.");
+      }
+      if (data.moduleIndex > 0) {
+        const { data: previous } = await context.supabase
+          .from("academy_module_progress")
+          .select("assessment_passed")
+          .eq("user_id", context.userId)
+          .eq("course_slug", data.courseSlug)
+          .eq("module_index", data.moduleIndex - 1)
+          .maybeSingle();
+        if (!previous?.assessment_passed)
+          throw new Error("Pass the previous module assessment first.");
+      }
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const { data: bank } = await supabaseAdmin
         .from("academy_module_assessments")
@@ -519,6 +616,27 @@ export const submitModuleAssessment = createServerFn({ method: "POST" })
         },
         { onConflict: "user_id,course_slug,module_index" },
       );
+      if (passed) {
+        const { data: completedPathLessons } = await context.supabase
+          .from("academy_progress")
+          .select("lesson_id")
+          .eq("user_id", context.userId)
+          .eq("path_slug", entry.path.slug)
+          .eq("completed", true);
+        const { courseLessons, pathLessons: getPathLessons } =
+          await import("@/lib/academy/catalog");
+        const completedIds = new Set((completedPathLessons ?? []).map((row) => row.lesson_id));
+        const finished = getPathLessons(entry.path.slug).every((lesson) =>
+          completedIds.has(lesson.id),
+        );
+        if (finished) {
+          await supabaseAdmin
+            .from("academy_profiles")
+            .update({ path_completed: true })
+            .eq("user_id", context.userId)
+            .eq("active_path_slug", entry.path.slug);
+        }
+      }
       return { score, total, passed };
     },
   );
