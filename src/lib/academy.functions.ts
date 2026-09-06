@@ -445,10 +445,10 @@ export const getModuleAssessment = createServerFn({ method: "POST" })
       if (!entry || !module) throw new Error("That module does not exist.");
       const { data: profile } = await context.supabase
         .from("academy_profiles")
-        .select("active_path_slug")
+        .select("active_path_slug, path_completed")
         .eq("user_id", context.userId)
         .maybeSingle();
-      if (profile?.active_path_slug && profile.active_path_slug !== entry.path.slug) {
+      if (profile?.active_path_slug && profile.active_path_slug !== entry.path.slug && !profile.path_completed) {
         throw new Error("This learning path is locked until your active path is complete.");
       }
       if (data.moduleIndex > 0) {
