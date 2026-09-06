@@ -39,11 +39,13 @@ const ModuleInput = z.object({
 const AssessmentSubmitInput = ModuleInput.extend({
   questionIds: z.array(z.string().min(1).max(80)).min(10).max(15),
   answers: z.array(z.string().min(1).max(500)).min(10).max(15),
-}).refine((value) => value.questionIds.length === value.answers.length, {
-  message: "Each assessment question needs one answer.",
-}).refine((value) => new Set(value.questionIds).size === value.questionIds.length, {
-  message: "Each assessment question can only be submitted once.",
-});
+})
+  .refine((value) => value.questionIds.length === value.answers.length, {
+    message: "Each assessment question needs one answer.",
+  })
+  .refine((value) => new Set(value.questionIds).size === value.questionIds.length, {
+    message: "Each assessment question can only be submitted once.",
+  });
 
 export type AcademyProfile = {
   experienceLevel: string;
@@ -217,7 +219,11 @@ export const setActiveLearningPath = createServerFn({ method: "POST" })
       .eq("user_id", context.userId)
       .maybeSingle();
     if (!existing) throw new Error("Complete your learning profile before choosing a path.");
-    if (existing.active_path_slug && existing.active_path_slug !== data.pathSlug && !existing.path_completed) {
+    if (
+      existing.active_path_slug &&
+      existing.active_path_slug !== data.pathSlug &&
+      !existing.path_completed
+    ) {
       throw new Error("Complete your active learning path before choosing another one.");
     }
     const { error } = await context.supabase
@@ -457,7 +463,11 @@ export const getModuleAssessment = createServerFn({ method: "POST" })
         .select("active_path_slug, path_completed")
         .eq("user_id", context.userId)
         .maybeSingle();
-      if (profile?.active_path_slug && profile.active_path_slug !== entry.path.slug && !profile.path_completed) {
+      if (
+        profile?.active_path_slug &&
+        profile.active_path_slug !== entry.path.slug &&
+        !profile.path_completed
+      ) {
         throw new Error("This learning path is locked until your active path is complete.");
       }
       if (data.moduleIndex > 0) {
@@ -532,7 +542,11 @@ export const submitModuleAssessment = createServerFn({ method: "POST" })
         .select("active_path_slug, path_completed")
         .eq("user_id", context.userId)
         .maybeSingle();
-      if (profile?.active_path_slug && profile.active_path_slug !== entry.path.slug && !profile.path_completed) {
+      if (
+        profile?.active_path_slug &&
+        profile.active_path_slug !== entry.path.slug &&
+        !profile.path_completed
+      ) {
         throw new Error("This learning path is locked until your active path is complete.");
       }
       if (data.moduleIndex > 0) {
@@ -543,7 +557,8 @@ export const submitModuleAssessment = createServerFn({ method: "POST" })
           .eq("course_slug", data.courseSlug)
           .eq("module_index", data.moduleIndex - 1)
           .maybeSingle();
-        if (!previous?.assessment_passed) throw new Error("Pass the previous module assessment first.");
+        if (!previous?.assessment_passed)
+          throw new Error("Pass the previous module assessment first.");
       }
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const { data: bank } = await supabaseAdmin
@@ -602,7 +617,7 @@ export const submitModuleAssessment = createServerFn({ method: "POST" })
         { onConflict: "user_id,course_slug,module_index" },
       );
       if (passed) {
-      const { data: completedPathLessons } = await context.supabase
+        const { data: completedPathLessons } = await context.supabase
           .from("academy_progress")
           .select("lesson_id")
           .eq("user_id", context.userId)
