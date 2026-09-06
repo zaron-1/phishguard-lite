@@ -41,6 +41,8 @@ const AssessmentSubmitInput = ModuleInput.extend({
   answers: z.array(z.string().min(1).max(500)).min(10).max(15),
 }).refine((value) => value.questionIds.length === value.answers.length, {
   message: "Each assessment question needs one answer.",
+}).refine((value) => new Set(value.questionIds).size === value.questionIds.length, {
+  message: "Each assessment question can only be submitted once.",
 });
 
 export type AcademyProfile = {
@@ -211,7 +213,7 @@ export const setActiveLearningPath = createServerFn({ method: "POST" })
     if (!getPath(data.pathSlug)) throw new Error("That learning path does not exist.");
     const { error } = await context.supabase
       .from("academy_profiles")
-      .update({ active_path_slug: data.pathSlug })
+      .update({ active_path_slug: data.pathSlug, path_completed: false })
       .eq("user_id", context.userId);
     if (error) {
       if (error.message.includes("Complete the active learning path")) {
@@ -516,6 +518,24 @@ export const submitModuleAssessment = createServerFn({ method: "POST" })
       const entry = getCourse(data.courseSlug);
       const module = entry?.course.modules[data.moduleIndex];
       if (!entry || !module) throw new Error("That module does not exist.");
+      const { data: profile } = await context.supabase
+        .from("academy_profiles")
+        .select("active_path_slug, path_completed")
+        .eq("user_id", context.userId)
+        .maybeSingle();
+      if (profile?.active_path_slug && profile.active_path_slug !== entry.path.slug && !profile.path_completed) {
+        throw new Error("This learning path is locked until your active path is complete.");
+      }
+      if (data.moduleIndex > 0) {
+        const { data: previous } = await context.supabase
+          .from("academy_module_progress")
+          .select("assessment_passed")
+          .eq("user_id", context.userId)
+          .eq("course_slug", data.courseSlug)
+          .eq("module_index", data.moduleIndex - 1)
+          .maybeSingle();
+        if (!previous?.assessment_passed) throw new Error("Pass the previous module assessment first.");
+      }
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const { data: bank } = await supabaseAdmin
         .from("academy_module_assessments")
