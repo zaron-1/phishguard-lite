@@ -228,6 +228,24 @@ export const getAcademyLesson = createServerFn({ method: "POST" })
   .handler(async ({ context, data }): Promise<LessonContent> => {
     const { lessonRefOrThrow, writeLesson } = await import("@/lib/academy/generate.server");
     const ref = lessonRefOrThrow(data.lessonId);
+    const { data: profile } = await context.supabase
+      .from("academy_profiles")
+      .select("active_path_slug, path_completed")
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    if (profile?.active_path_slug && profile.active_path_slug !== ref.pathSlug && !profile.path_completed) {
+      throw new Error("Finish your active learning path before opening another path.");
+    }
+    if (ref.moduleIndex > 0) {
+      const { data: previousModule } = await context.supabase
+        .from("academy_module_progress")
+        .select("assessment_passed")
+        .eq("user_id", context.userId)
+        .eq("course_slug", ref.courseSlug)
+        .eq("module_index", ref.moduleIndex - 1)
+        .maybeSingle();
+      if (!previousModule?.assessment_passed) throw new Error("Pass the previous module assessment first.");
+    }
 
     const { data: cached } = await context.supabase
       .from("academy_lessons")
@@ -357,8 +375,7 @@ export const setLessonProgress = createServerFn({ method: "POST" })
       .upsert(patch as any, { onConflict: "user_id,lesson_id" });
     if (error) throw new Error("Could not save your progress.");
 
-    const { courseLessons, getCourse } = await import("@/lib/academy/catalog");
-    const course = getCourse(ref.courseSlug)?.course;
+    const { courseLessons } = await import("@/lib/academy/catalog");
     const moduleLessons = courseLessons(ref.courseSlug).filter(
       (lesson) => lesson.moduleIndex === ref.moduleIndex,
     );
@@ -414,24 +431,6 @@ export const getModuleAssessment = createServerFn({ method: "POST" })
       const entry = getCourse(data.courseSlug);
       const module = entry?.course.modules[data.moduleIndex];
       if (!entry || !module) throw new Error("That module does not exist.");
-    const { data: profile } = await context.supabase
-      .from("academy_profiles")
-      .select("active_path_slug, path_completed")
-      .eq("user_id", context.userId)
-      .maybeSingle();
-    if (profile?.active_path_slug && profile.active_path_slug !== entry.path.slug && !profile.path_completed) {
-      throw new Error("This learning path is locked until your active path is complete.");
-    }
-    if (data.moduleIndex > 0) {
-      const { data: previous } = await context.supabase
-        .from("academy_module_progress")
-        .select("assessment_passed")
-        .eq("user_id", context.userId)
-        .eq("course_slug", data.courseSlug)
-        .eq("module_index", data.moduleIndex - 1)
-        .maybeSingle();
-      if (!previous?.assessment_passed) throw new Error("Pass the previous module assessment first.");
-    }
       const { data: profile } = await context.supabase
         .from("academy_profiles")
         .select("active_path_slug")
