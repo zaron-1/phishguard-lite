@@ -2,14 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import {
-  Brain,
-  Loader2,
-  CheckCircle2,
-  XCircle,
-  ArrowRight,
-  RotateCcw,
-} from "lucide-react";
+import { Brain, Loader2, CheckCircle2, XCircle, ArrowRight, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +10,24 @@ import { toast } from "sonner";
 import { generateQuizQuestion, type QuizQuestion } from "@/lib/quiz.functions";
 
 export const Route = createFileRoute("/_authenticated/quiz")({
-  head: () => ({ meta: [{ title: "Cybersecurity Quiz — PhishGuard Lite" }] }),
+  head: () => ({
+    meta: [
+      { title: "Cybersecurity Quiz — PhishGuard Lite" },
+      {
+        name: "description",
+        content:
+          "Test your cybersecurity knowledge with PhishGuard quizzes at your chosen difficulty.",
+      },
+      { property: "og:title", content: "Cybersecurity Quiz — PhishGuard Lite" },
+      {
+        property: "og:description",
+        content:
+          "Test your cybersecurity knowledge with PhishGuard quizzes at your chosen difficulty.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Quiz,
 });
 
@@ -150,7 +160,9 @@ function Quiz() {
                     className={`flex w-full items-center justify-between gap-2 rounded-lg border px-4 py-3 text-left text-sm transition-colors disabled:cursor-default ${cls}`}
                   >
                     <span>{option}</span>
-                    {answered && isCorrect && <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />}
+                    {answered && isCorrect && (
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />
+                    )}
                     {answered && isPicked && !isCorrect && (
                       <XCircle className="h-4 w-4 shrink-0 text-destructive" />
                     )}

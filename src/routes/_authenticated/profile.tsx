@@ -12,7 +12,19 @@ import { Badge } from "@/components/ui/badge";
 import { getMyProfile, updateMyProfile } from "@/lib/rbac.functions";
 
 export const Route = createFileRoute("/_authenticated/profile")({
-  head: () => ({ meta: [{ title: "My Profile — PhishGuard Lite" }] }),
+  head: () => ({
+    meta: [
+      { title: "My Profile — PhishGuard Lite" },
+      { name: "description", content: "Manage your PhishGuard profile and account details." },
+      { property: "og:title", content: "My Profile — PhishGuard Lite" },
+      {
+        property: "og:description",
+        content: "Manage your PhishGuard profile and account details.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: ProfilePage,
 });
 
@@ -57,7 +69,9 @@ function ProfilePage() {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg">Personal details</CardTitle>
           {data?.status && (
-            <Badge variant={data.status === "active" ? "default" : "destructive"}>{data.status}</Badge>
+            <Badge variant={data.status === "active" ? "default" : "destructive"}>
+              {data.status}
+            </Badge>
           )}
         </CardHeader>
         <CardContent>
@@ -79,15 +93,31 @@ function ProfilePage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="name">Display name</Label>
-                <Input id="name" value={displayName} maxLength={120} onChange={(e) => setDisplayName(e.target.value)} />
+                <Input
+                  id="name"
+                  value={displayName}
+                  maxLength={120}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone number</Label>
-                <Input id="phone" value={phone} maxLength={40} onChange={(e) => setPhone(e.target.value)} />
+                <Input
+                  id="phone"
+                  value={phone}
+                  maxLength={40}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="bio">Bio</Label>
-                <Textarea id="bio" value={bio} maxLength={1000} rows={4} onChange={(e) => setBio(e.target.value)} />
+                <Textarea
+                  id="bio"
+                  value={bio}
+                  maxLength={1000}
+                  rows={4}
+                  onChange={(e) => setBio(e.target.value)}
+                />
               </div>
 
               {mutation.isError && (
@@ -96,11 +126,17 @@ function ProfilePage() {
 
               <Button type="submit" disabled={mutation.isPending}>
                 {mutation.isPending ? (
-                  <><Loader2 className="h-4 w-4 animate-spin" /> Saving…</>
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> Saving…
+                  </>
                 ) : saved ? (
-                  <><CheckCircle2 className="h-4 w-4" /> Saved</>
+                  <>
+                    <CheckCircle2 className="h-4 w-4" /> Saved
+                  </>
                 ) : (
-                  <><Save className="h-4 w-4" /> Save changes</>
+                  <>
+                    <Save className="h-4 w-4" /> Save changes
+                  </>
                 )}
               </Button>
             </form>

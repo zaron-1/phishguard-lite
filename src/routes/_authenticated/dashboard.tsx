@@ -8,7 +8,24 @@ import { Badge } from "@/components/ui/badge";
 import { getUserDashboard } from "@/lib/rbac.functions";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — PhishGuard Lite" }] }),
+  head: () => ({
+    meta: [
+      { title: "Dashboard — PhishGuard Lite" },
+      {
+        name: "description",
+        content:
+          "Review your PhishGuard account, saved searches and recent cybersecurity activity.",
+      },
+      { property: "og:title", content: "Dashboard — PhishGuard Lite" },
+      {
+        property: "og:description",
+        content:
+          "Review your PhishGuard account, saved searches and recent cybersecurity activity.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Dashboard,
 });
 
@@ -29,8 +46,12 @@ function Dashboard() {
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Welcome back{data?.profile?.displayName ? `, ${data.profile.displayName}` : ""}</h1>
-        <p className="text-sm text-muted-foreground">Your personal dashboard and activity overview.</p>
+        <h1 className="text-2xl font-bold">
+          Welcome back{data?.profile?.displayName ? `, ${data.profile.displayName}` : ""}
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Your personal dashboard and activity overview.
+        </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -42,7 +63,11 @@ function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="truncate text-2xl font-bold">
-                {isLoading ? <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /> : value}
+                {isLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                ) : (
+                  value
+                )}
               </div>
             </CardContent>
           </Card>
@@ -81,7 +106,9 @@ function Dashboard() {
               <ul className="divide-y">
                 {data.recentSearches.map((s) => (
                   <li key={s.id} className="flex items-center justify-between gap-3 py-2">
-                    <span className="truncate text-sm" title={s.searchQuery}>{s.searchQuery}</span>
+                    <span className="truncate text-sm" title={s.searchQuery}>
+                      {s.searchQuery}
+                    </span>
                     {s.searchCategory && <Badge variant="secondary">{s.searchCategory}</Badge>}
                   </li>
                 ))}

@@ -18,7 +18,22 @@ import {
 } from "@/lib/rbac.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => ({ meta: [{ title: "Admin Panel — PhishGuard Lite" }] }),
+  head: () => ({
+    meta: [
+      { title: "Admin Panel — PhishGuard Lite" },
+      {
+        name: "description",
+        content: "Manage PhishGuard users, security activity and site content.",
+      },
+      { property: "og:title", content: "Admin Panel — PhishGuard Lite" },
+      {
+        property: "og:description",
+        content: "Manage PhishGuard users, security activity and site content.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: AdminPage,
 });
 
@@ -38,7 +53,9 @@ function AdminPage() {
     <div className="mx-auto max-w-6xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Admin Panel</h1>
-        <p className="text-sm text-muted-foreground">Manage users, roles, searches, and view system statistics.</p>
+        <p className="text-sm text-muted-foreground">
+          Manage users, roles, searches, and view system statistics.
+        </p>
       </div>
 
       <Tabs defaultValue="overview">
@@ -50,11 +67,21 @@ function AdminPage() {
           <TabsTrigger value="cms">Content CMS</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="mt-4"><Overview /></TabsContent>
-        <TabsContent value="users" className="mt-4"><UsersPanel /></TabsContent>
-        <TabsContent value="searches" className="mt-4"><SearchesPanel /></TabsContent>
-        <TabsContent value="activity" className="mt-4"><ActivityPanel /></TabsContent>
-        <TabsContent value="cms" className="mt-4"><CmsPanel /></TabsContent>
+        <TabsContent value="overview" className="mt-4">
+          <Overview />
+        </TabsContent>
+        <TabsContent value="users" className="mt-4">
+          <UsersPanel />
+        </TabsContent>
+        <TabsContent value="searches" className="mt-4">
+          <SearchesPanel />
+        </TabsContent>
+        <TabsContent value="activity" className="mt-4">
+          <ActivityPanel />
+        </TabsContent>
+        <TabsContent value="cms" className="mt-4">
+          <CmsPanel />
+        </TabsContent>
       </Tabs>
     </div>
   );
@@ -62,7 +89,10 @@ function AdminPage() {
 
 function Overview() {
   const fetchStats = useServerFn(getAdminDashboard);
-  const { data, isLoading } = useQuery({ queryKey: ["admin-dashboard"], queryFn: () => fetchStats() });
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin-dashboard"],
+    queryFn: () => fetchStats(),
+  });
 
   const stats = [
     { label: "Total users", value: data?.totalUsers ?? 0, icon: Users },
@@ -82,7 +112,11 @@ function Overview() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {isLoading ? <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /> : value}
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              ) : (
+                value
+              )}
             </div>
           </CardContent>
         </Card>
@@ -106,39 +140,55 @@ function UsersPanel() {
   };
 
   const status = useMutation({
-    mutationFn: (v: { targetUserId: string; status: "active" | "suspended" }) => statusFn({ data: v }),
+    mutationFn: (v: { targetUserId: string; status: "active" | "suspended" }) =>
+      statusFn({ data: v }),
     onSuccess: invalidate,
   });
   const role = useMutation({
-    mutationFn: (v: { targetUserId: string; role: "admin" | "user"; grant: boolean }) => roleFn({ data: v }),
+    mutationFn: (v: { targetUserId: string; role: "admin" | "user"; grant: boolean }) =>
+      roleFn({ data: v }),
     onSuccess: invalidate,
   });
 
   if (isLoading) {
-    return <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>;
+    return (
+      <div className="flex justify-center py-8">
+        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
   return (
     <Card>
-      <CardHeader><CardTitle className="text-lg">User management</CardTitle></CardHeader>
+      <CardHeader>
+        <CardTitle className="text-lg">User management</CardTitle>
+      </CardHeader>
       <CardContent className="space-y-3">
         {(data ?? []).map((u) => {
           const isAdmin = u.roles.includes("admin");
           return (
-            <div key={u.userId} className="flex flex-col gap-3 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between">
+            <div
+              key={u.userId}
+              className="flex flex-col gap-3 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between"
+            >
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">{u.displayName || "—"}</p>
                 <p className="truncate text-xs text-muted-foreground">{u.email}</p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <Badge variant={u.status === "active" ? "default" : "destructive"}>{u.status}</Badge>
+                <Badge variant={u.status === "active" ? "default" : "destructive"}>
+                  {u.status}
+                </Badge>
                 {isAdmin && <Badge variant="secondary">admin</Badge>}
                 <Button
                   size="sm"
                   variant="outline"
                   disabled={status.isPending}
                   onClick={() =>
-                    status.mutate({ targetUserId: u.userId, status: u.status === "active" ? "suspended" : "active" })
+                    status.mutate({
+                      targetUserId: u.userId,
+                      status: u.status === "active" ? "suspended" : "active",
+                    })
                   }
                 >
                   {u.status === "active" ? "Suspend" : "Activate"}
@@ -147,7 +197,9 @@ function UsersPanel() {
                   size="sm"
                   variant="outline"
                   disabled={role.isPending}
-                  onClick={() => role.mutate({ targetUserId: u.userId, role: "admin", grant: !isAdmin })}
+                  onClick={() =>
+                    role.mutate({ targetUserId: u.userId, role: "admin", grant: !isAdmin })
+                  }
                 >
                   {isAdmin ? "Revoke admin" : "Make admin"}
                 </Button>
@@ -155,7 +207,9 @@ function UsersPanel() {
             </div>
           );
         })}
-        {(data ?? []).length === 0 && <p className="py-6 text-center text-sm text-muted-foreground">No users found.</p>}
+        {(data ?? []).length === 0 && (
+          <p className="py-6 text-center text-sm text-muted-foreground">No users found.</p>
+        )}
       </CardContent>
     </Card>
   );
@@ -163,22 +217,33 @@ function UsersPanel() {
 
 function SearchesPanel() {
   const fetchSearches = useServerFn(listAllSearches);
-  const { data, isLoading } = useQuery({ queryKey: ["admin-searches"], queryFn: () => fetchSearches() });
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin-searches"],
+    queryFn: () => fetchSearches(),
+  });
 
   if (isLoading) {
-    return <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>;
+    return (
+      <div className="flex justify-center py-8">
+        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
   return (
     <Card>
-      <CardHeader><CardTitle className="text-lg">All search history</CardTitle></CardHeader>
+      <CardHeader>
+        <CardTitle className="text-lg">All search history</CardTitle>
+      </CardHeader>
       <CardContent>
         {(data ?? []).length > 0 ? (
           <ul className="divide-y">
             {data!.map((r) => (
               <li key={r.id} className="flex items-center justify-between gap-3 py-2">
                 <div className="min-w-0">
-                  <p className="truncate text-sm" title={r.searchQuery}>{r.searchQuery}</p>
+                  <p className="truncate text-sm" title={r.searchQuery}>
+                    {r.searchQuery}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     {new Date(r.searchedAt).toLocaleString()} · {r.ipAddress ?? "no ip"}
                   </p>
@@ -197,27 +262,40 @@ function SearchesPanel() {
 
 function ActivityPanel() {
   const fetchStats = useServerFn(getAdminDashboard);
-  const { data, isLoading } = useQuery({ queryKey: ["admin-actions"], queryFn: () => fetchStats() });
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin-actions"],
+    queryFn: () => fetchStats(),
+  });
 
   if (isLoading) {
-    return <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>;
+    return (
+      <div className="flex justify-center py-8">
+        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
   return (
     <Card>
-      <CardHeader><CardTitle className="text-lg">Administrative activity log</CardTitle></CardHeader>
+      <CardHeader>
+        <CardTitle className="text-lg">Administrative activity log</CardTitle>
+      </CardHeader>
       <CardContent>
         {data && data.recentActions.length > 0 ? (
           <ul className="divide-y">
             {data.recentActions.map((a) => (
               <li key={a.id} className="flex items-center justify-between gap-3 py-2">
                 <span className="text-sm font-medium">{a.action}</span>
-                <span className="text-xs text-muted-foreground">{new Date(a.createdAt).toLocaleString()}</span>
+                <span className="text-xs text-muted-foreground">
+                  {new Date(a.createdAt).toLocaleString()}
+                </span>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="py-6 text-center text-sm text-muted-foreground">No administrative actions logged yet.</p>
+          <p className="py-6 text-center text-sm text-muted-foreground">
+            No administrative actions logged yet.
+          </p>
         )}
       </CardContent>
     </Card>

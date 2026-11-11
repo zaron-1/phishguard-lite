@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Headphones,
   Loader2,
+  Lock,
   Play,
   RotateCcw,
   Sparkles,
@@ -73,9 +74,15 @@ function LessonPage() {
   const narrate = useServerFn(narrateLesson);
   const saveQuiz = useServerFn(saveLessonQuizResult);
 
-  const { data: lesson, isLoading } = useQuery({
+  const {
+    data: lesson,
+    isLoading,
+    error: lessonError,
+    refetch,
+  } = useQuery({
     queryKey: ["academy", "lesson", lessonId],
     queryFn: () => loadLesson({ data: { lessonId } }),
+    retry: false,
   });
   const { data: overview } = useQuery({
     queryKey: ["academy", "overview"],
@@ -193,6 +200,52 @@ function LessonPage() {
       toast.error(error instanceof Error ? error.message : "Quiz score could not be saved.");
     }
   };
+
+  if (lessonError && !lesson) {
+    const message =
+      lessonError instanceof Error ? lessonError.message : "This lesson could not be loaded.";
+    const moduleLocked = message === "Pass the previous module assessment first.";
+    const pathLocked = message === "Finish your active learning path before opening another path.";
+
+    return (
+      <section className="mx-auto flex min-h-[50vh] max-w-4xl flex-col items-center justify-center gap-4 text-center">
+        {(moduleLocked || pathLocked) && <Lock className="h-6 w-6 text-muted-foreground" />}
+        <h1 className="text-xl font-semibold">
+          {moduleLocked || pathLocked ? "Lesson locked" : "Lesson could not be loaded"}
+        </h1>
+        <p role="alert" className="max-w-md text-sm text-muted-foreground">
+          {message}
+        </p>
+        <div className="flex flex-wrap justify-center gap-2">
+          {moduleLocked ? (
+            <Button asChild>
+              <Link
+                to="/academy/assessment/$courseSlug/$moduleIndex"
+                params={{ courseSlug: ref.courseSlug, moduleIndex: String(ref.moduleIndex - 1) }}
+              >
+                Previous module assessment
+              </Link>
+            </Button>
+          ) : pathLocked ? (
+            <Button asChild>
+              <Link to="/academy">Active learning path</Link>
+            </Button>
+          ) : (
+            <Button onClick={() => void refetch()}>
+              <RotateCcw className="mr-2 h-4 w-4" />
+              Try again
+            </Button>
+          )}
+          <Button asChild variant="outline">
+            <Link to="/academy/course/$courseSlug" params={{ courseSlug: ref.courseSlug }}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to course
+            </Link>
+          </Button>
+        </div>
+      </section>
+    );
+  }
 
   if (isLoading || !lesson) {
     return (

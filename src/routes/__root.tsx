@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
@@ -36,7 +37,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
@@ -104,16 +105,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         name: "twitter:description",
         content:
           "PhishGuard AI is a PWA that detects phishing links and teaches cybersecurity using AI.",
-      },
-      {
-        property: "og:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/81783823-3ff3-4bd0-9845-5ac5f28c80c1/id-preview-4b4e1099--0c7e790e-7857-4cf3-8ef7-a9008faf0865.lovable.app-1780419694989.png",
-      },
-      {
-        name: "twitter:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/81783823-3ff3-4bd0-9845-5ac5f28c80c1/id-preview-4b4e1099--0c7e790e-7857-4cf3-8ef7-a9008faf0865.lovable.app-1780419694989.png",
       },
     ],
     links: [

@@ -1,5 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ShieldCheck, GraduationCap, LayoutDashboard, ArrowRight, KeyRound, Lock, Sparkles, Shield, Search } from "lucide-react";
+import {
+  ShieldCheck,
+  GraduationCap,
+  LayoutDashboard,
+  ArrowRight,
+  KeyRound,
+  Lock,
+  Sparkles,
+  Shield,
+  Search,
+} from "lucide-react";
 import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -11,9 +21,19 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "PhishGuard Lite — AI Phishing Detection & Cyber Learning" },
-      { name: "description", content: "Detect phishing links instantly, learn cybersecurity with an AI tutor, and store your passwords securely — all in one smart, lightweight app." },
+      {
+        name: "description",
+        content:
+          "Detect phishing links instantly, learn cybersecurity with an AI tutor, and store your passwords securely — all in one smart, lightweight app.",
+      },
       { property: "og:title", content: "PhishGuard Lite" },
-      { property: "og:description", content: "AI-powered phishing detection, cybersecurity learning, and a secure password vault." },
+      {
+        property: "og:description",
+        content:
+          "AI-powered phishing detection, cybersecurity learning, and a secure password vault.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   loader: () => getLandingContent(),
@@ -60,12 +80,30 @@ function Landing() {
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="animate-blob absolute -left-20 -top-20 h-80 w-80 rounded-full bg-primary/50 blur-3xl sm:h-[28rem] sm:w-[28rem]" />
         <div className="animate-blob-slow absolute -right-20 top-1/4 h-80 w-80 rounded-full bg-chart-5/55 blur-3xl sm:h-[28rem] sm:w-[28rem]" />
-        <div className="animate-blob absolute bottom-12 left-1/4 h-72 w-72 rounded-full bg-chart-2/45 blur-3xl sm:h-96 sm:w-96" style={{ animationDelay: "-6s" }} />
-        <div className="animate-blob-slow absolute -bottom-16 right-0 h-72 w-72 rounded-full bg-[var(--color-violet)]/50 blur-3xl sm:h-[26rem] sm:w-[26rem]" style={{ animationDelay: "-11s" }} />
-        <div className="animate-blob absolute left-1/2 top-1/2 h-60 w-60 -translate-x-1/2 rounded-full bg-[var(--color-amber)]/40 blur-3xl sm:h-[22rem] sm:w-[22rem]" style={{ animationDelay: "-3s" }} />
-        <div className="animate-blob-slow absolute right-1/4 -top-12 h-60 w-60 rounded-full bg-[var(--color-rose)]/45 blur-3xl sm:h-80 sm:w-80" style={{ animationDelay: "-15s" }} />
-        <div className="animate-blob absolute left-1/3 top-1/3 h-52 w-52 rounded-full bg-[var(--color-cyan)]/40 blur-3xl sm:h-72 sm:w-72" style={{ animationDelay: "-9s" }} />
-        <div className="animate-blob-slow absolute bottom-1/4 left-0 h-48 w-48 rounded-full bg-[var(--color-emerald)]/40 blur-3xl sm:h-64 sm:w-64" style={{ animationDelay: "-20s" }} />
+        <div
+          className="animate-blob absolute bottom-12 left-1/4 h-72 w-72 rounded-full bg-chart-2/45 blur-3xl sm:h-96 sm:w-96"
+          style={{ animationDelay: "-6s" }}
+        />
+        <div
+          className="animate-blob-slow absolute -bottom-16 right-0 h-72 w-72 rounded-full bg-[var(--color-violet)]/50 blur-3xl sm:h-[26rem] sm:w-[26rem]"
+          style={{ animationDelay: "-11s" }}
+        />
+        <div
+          className="animate-blob absolute left-1/2 top-1/2 h-60 w-60 -translate-x-1/2 rounded-full bg-[var(--color-amber)]/40 blur-3xl sm:h-[22rem] sm:w-[22rem]"
+          style={{ animationDelay: "-3s" }}
+        />
+        <div
+          className="animate-blob-slow absolute right-1/4 -top-12 h-60 w-60 rounded-full bg-[var(--color-rose)]/45 blur-3xl sm:h-80 sm:w-80"
+          style={{ animationDelay: "-15s" }}
+        />
+        <div
+          className="animate-blob absolute left-1/3 top-1/3 h-52 w-52 rounded-full bg-[var(--color-cyan)]/40 blur-3xl sm:h-72 sm:w-72"
+          style={{ animationDelay: "-9s" }}
+        />
+        <div
+          className="animate-blob-slow absolute bottom-1/4 left-0 h-48 w-48 rounded-full bg-[var(--color-emerald)]/40 blur-3xl sm:h-64 sm:w-64"
+          style={{ animationDelay: "-20s" }}
+        />
       </div>
       <AnimatedBackground />
 
@@ -102,7 +140,11 @@ function Landing() {
             return (
               <span key={`${word}-${i}`}>
                 <span className="animate-word" style={{ animationDelay: `${0.05 + i * 0.16}s` }}>
-                  {highlight ? <span className="shimmer-word text-cyber-animated">{word}</span> : word}
+                  {highlight ? (
+                    <span className="shimmer-word text-cyber-animated">{word}</span>
+                  ) : (
+                    word
+                  )}
                 </span>{" "}
               </span>
             );
@@ -135,7 +177,11 @@ function Landing() {
           </div>
           <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
             <div className="inline-flex rounded-2xl bg-gradient-to-br from-primary/20 to-chart-5/20 p-4">
-              <img src={content.heroImageUrl || logo} alt="PhishGuard" className="h-16 w-16 rounded-xl object-cover sm:h-20 sm:w-20" />
+              <img
+                src={content.heroImageUrl || logo}
+                alt="PhishGuard"
+                className="h-16 w-16 rounded-xl object-cover sm:h-20 sm:w-20"
+              />
             </div>
             <div className="space-y-1">
               <p className="text-lg font-semibold sm:text-xl">{content.heroCardTitle}</p>
@@ -150,7 +196,10 @@ function Landing() {
       {/* Feature grid */}
       <section className="relative mx-auto grid max-w-5xl gap-5 px-4 pb-10 sm:px-6 sm:pb-14 md:grid-cols-2 lg:grid-cols-4">
         {FEATURES.map(({ icon: Icon, title, desc, color, bg }) => (
-          <div key={title} className="group rounded-2xl border bg-card p-5 transition-all hover:-translate-y-1 hover:shadow-xl">
+          <div
+            key={title}
+            className="group rounded-2xl border bg-card p-5 transition-all hover:-translate-y-1 hover:shadow-xl"
+          >
             <div className={`mb-4 inline-flex rounded-xl ${bg} p-3 ${color}`}>
               <Icon className="h-6 w-6" />
             </div>
@@ -172,9 +221,7 @@ function Landing() {
                 New: Password Vault
               </div>
               <h2 className="text-2xl font-bold sm:text-3xl">{content.vaultTitle}</h2>
-              <p className="mt-3 text-base text-muted-foreground sm:text-lg">
-                {content.vaultText}
-              </p>
+              <p className="mt-3 text-base text-muted-foreground sm:text-lg">{content.vaultText}</p>
               <ul className="mt-4 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
                 <li className="flex items-center gap-2">
                   <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-emerald)]" />

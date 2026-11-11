@@ -16,3 +16,8 @@
 
 - PhishGuard authentication and protected app routes.
 - Phishing analyzer, report generation, dashboard, tutor, vault, quiz, admin CMS, and PWA behavior.
+
+## Current fixes and handoff
+
+- [x] Fix lesson errors being hidden behind an endless loading screen; verify available and locked lessons.
+- [ ] Copy the code to the user's GitHub account (requires the user to connect Git sync in Project settings → Git).

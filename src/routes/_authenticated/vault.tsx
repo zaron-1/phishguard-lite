@@ -29,7 +29,22 @@ import {
 } from "@/lib/vault.functions";
 
 export const Route = createFileRoute("/_authenticated/vault")({
-  head: () => ({ meta: [{ title: "Password Vault — PhishGuard Lite" }] }),
+  head: () => ({
+    meta: [
+      { title: "Password Vault — PhishGuard Lite" },
+      {
+        name: "description",
+        content: "Manage saved credentials and generate strong passwords in PhishGuard.",
+      },
+      { property: "og:title", content: "Password Vault — PhishGuard Lite" },
+      {
+        property: "og:description",
+        content: "Manage saved credentials and generate strong passwords in PhishGuard.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: VaultPage,
 });
 
@@ -255,7 +270,10 @@ function VaultPage() {
                 {password && (
                   <div className="space-y-1 pt-1">
                     <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                      <div className={`h-full ${strength.cls}`} style={{ width: `${strength.pct}%` }} />
+                      <div
+                        className={`h-full ${strength.cls}`}
+                        style={{ width: `${strength.pct}%` }}
+                      />
                     </div>
                     <p className="text-xs text-muted-foreground">{strength.label}</p>
                   </div>
@@ -300,7 +318,11 @@ function VaultPage() {
             </div>
 
             <Button type="submit" disabled={add.isPending || !canSave} className="gap-2">
-              {add.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+              {add.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Plus className="h-4 w-4" />
+              )}
               Save to vault
             </Button>
           </form>
@@ -348,7 +370,11 @@ function VaultPage() {
                           className="text-muted-foreground hover:text-foreground"
                           aria-label={show ? "Hide password" : "Reveal password"}
                         >
-                          {show ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                          {show ? (
+                            <EyeOff className="h-3.5 w-3.5" />
+                          ) : (
+                            <Eye className="h-3.5 w-3.5" />
+                          )}
                         </button>
                         <button
                           type="button"
@@ -374,9 +400,7 @@ function VaultPage() {
               })}
             </ul>
           ) : (
-            <p className="py-8 text-center text-sm text-muted-foreground">
-              No saved logins yet.
-            </p>
+            <p className="py-8 text-center text-sm text-muted-foreground">No saved logins yet.</p>
           )}
         </CardContent>
       </Card>

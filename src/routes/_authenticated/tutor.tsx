@@ -9,7 +9,22 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/tutor")({
-  head: () => ({ meta: [{ title: "AI Tutor — PhishGuard Lite" }] }),
+  head: () => ({
+    meta: [
+      { title: "AI Tutor — PhishGuard Lite" },
+      {
+        name: "description",
+        content: "Learn cybersecurity and ask security questions with the PhishGuard AI tutor.",
+      },
+      { property: "og:title", content: "AI Tutor — PhishGuard Lite" },
+      {
+        property: "og:description",
+        content: "Learn cybersecurity and ask security questions with the PhishGuard AI tutor.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Tutor,
 });
 
@@ -72,17 +87,13 @@ function Tutor() {
           </div>
         ) : (
           messages.map((m) => {
-            const text = m.parts
-              .map((p) => (p.type === "text" ? p.text : ""))
-              .join("");
+            const text = m.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
             const isUser = m.role === "user";
             return (
               <div key={m.id} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
                 <div
                   className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${
-                    isUser
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-foreground"
+                    isUser ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
                   }`}
                 >
                   {isUser ? (

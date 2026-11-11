@@ -22,7 +22,22 @@ import { getMySearchHistory, addSearchHistory } from "@/lib/rbac.functions";
 import { SecurityReportDialog } from "@/components/security-report-dialog";
 
 export const Route = createFileRoute("/_authenticated/analyzer")({
-  head: () => ({ meta: [{ title: "Phishing Analyzer — PhishGuard Lite" }] }),
+  head: () => ({
+    meta: [
+      { title: "Phishing Analyzer — PhishGuard Lite" },
+      {
+        name: "description",
+        content: "Analyze suspicious URLs and review phishing risks with PhishGuard.",
+      },
+      { property: "og:title", content: "Phishing Analyzer — PhishGuard Lite" },
+      {
+        property: "og:description",
+        content: "Analyze suspicious URLs and review phishing risks with PhishGuard.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Analyzer,
 });
 
@@ -62,7 +77,9 @@ function Analyzer() {
     mutationFn: (value) => analyze({ data: { url: value } }),
     onSuccess: async (_res, value) => {
       try {
-        await saveSearch({ data: { searchQuery: value, searchCategory: "url", searchResultsCount: 1 } });
+        await saveSearch({
+          data: { searchQuery: value, searchCategory: "url", searchResultsCount: 1 },
+        });
       } catch {
         /* history is best-effort */
       }
@@ -175,7 +192,9 @@ function Analyzer() {
                   const Icon = STATUS_ICON[check.status] ?? AlertTriangle;
                   return (
                     <li key={`${check.name}-${i}`} className="flex items-start gap-2 text-sm">
-                      <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${STATUS_COLOR[check.status] ?? ""}`} />
+                      <Icon
+                        className={`mt-0.5 h-4 w-4 shrink-0 ${STATUS_COLOR[check.status] ?? ""}`}
+                      />
                       <div>
                         <span className="font-medium">{check.name}</span>
                         <span className="text-muted-foreground"> — {check.detail}</span>
@@ -187,9 +206,15 @@ function Analyzer() {
             )}
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-dashed p-3">
               <p className="text-xs text-muted-foreground">
-                Need depth? Generate a full OWASP-style vulnerability assessment for this site and download it as PDF.
+                Need depth? Generate a full OWASP-style vulnerability assessment for this site and
+                download it as PDF.
               </p>
-              <SecurityReportDialog url={result.url} size="default" variant="default" label="Generate security report" />
+              <SecurityReportDialog
+                url={result.url}
+                size="default"
+                variant="default"
+                label="Generate security report"
+              />
             </div>
           </CardContent>
         </Card>
